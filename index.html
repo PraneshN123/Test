@@ -3,620 +3,1252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Secret Santa Protocol</title>
+    <title>🎄 ChrisMom & ChrisChild | Winter Magic Edition</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <style>
         :root {
-            /* Palette: Midnight Winter */
-            --bg-dark: #0f172a;
-            --bg-gradient: radial-gradient(circle at 50% 0%, #312e81 0%, #0f172a 80%);
+            /* Palette */
+            --christmas-red: #D62828;
+            --christmas-green: #2D6A4F;
+            --dark-green: #1B4332;
+            --christmas-gold: #F4D35E;
+            --snow-white: #FFFFFF;
+            --midnight-blue: #081c15;
             
-            /* Glass Effect */
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --glass-blur: blur(20px);
+            /* Glassmorphism */
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             
-            /* Accents */
-            --primary: #f43f5e; /* Rose Red */
-            --secondary: #10b981; /* Emerald */
-            --gold: #fbbf24;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            
-            /* Animation */
-            --ease-out: cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* Text */
+            --text-main: #1d3557;
+            --text-light: #f1faee;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg-dark);
-            background-image: var(--bg-gradient);
+            font-family: 'Nunito', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #2D6A4F, #081c15);
             color: var(--text-main);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden; /* App feel */
+            overflow-x: hidden;
+            position: relative;
         }
 
-        /* --- ❄️ AMBIENT EFFECTS --- */
-        .snow-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        /* --- BACKGROUND MAGIC --- */
+        .lights-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Snowfall */
         .snowflake {
-            position: absolute; background: white; border-radius: 50%; opacity: 0.6;
-            animation: fall linear infinite; box-shadow: 0 0 5px rgba(255,255,255,0.8);
+            position: fixed;
+            top: -2vh;
+            color: #fff;
+            animation: fall linear forwards;
+            z-index: 1;
+            pointer-events: none;
+            text-shadow: 0 0 5px rgba(255,255,255,0.8);
         }
-        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        @keyframes fall {
+            to { transform: translateY(105vh) rotate(720deg); }
+        }
 
-        /* --- 📱 MAIN STAGE (Mobile Container) --- */
-        .app-stage {
-            width: 100%;
-            max-width: 480px;
-            height: 100vh; /* Full screen on mobile */
+        /* --- LAYOUT --- */
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
             position: relative;
             z-index: 10;
-            overflow-y: auto;
-            background: rgba(15, 23, 42, 0.4); 
-            display: flex; flex-direction: column;
         }
 
-        /* Desktop tweak: Make it look like a floating phone */
-        @media (min-width: 500px) {
-            .app-stage {
-                height: 90vh;
-                border-radius: 30px;
-                border: 1px solid var(--glass-border);
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-                overflow: hidden; /* Internal scroll */
-            }
+        /* --- TYPOGRAPHY --- */
+        h1, h2, h3 {
+            font-family: 'Mountains of Christmas', cursive;
+            font-weight: 700;
+            line-height: 1.2;
         }
 
-        /* --- 🧊 GLASS CARDS & PANELS --- */
-        .view-section {
-            padding: 30px 24px;
-            min-height: 100%;
-            display: flex; flex-direction: column;
-            animation: fadeUp 0.6s var(--ease-out);
+        header h1 {
+            color: var(--christmas-gold);
+            font-size: 3.5rem;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            margin-bottom: 0.2rem;
         }
+        
+        header p { color: var(--text-light); opacity: 0.9; }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .glass-card {
+        /* --- GLASS CARDS --- */
+        .card {
             background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid var(--glass-border);
             border-radius: 24px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3);
+            padding: 2.5rem;
+            box-shadow: var(--glass-shadow);
+            margin-bottom: 2rem;
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* --- ✍️ TYPOGRAPHY --- */
-        h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 600; }
-        h1 { font-size: 2.8rem; background: linear-gradient(to right, #fff, #cbd5e1); -webkit-background-clip: text; color: transparent; margin-bottom: 5px; }
-        .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 30px; font-weight: 300; letter-spacing: 0.5px; }
-
-        /* --- 🔘 MODERN INPUTS & BUTTONS --- */
-        .input-group { position: relative; margin-bottom: 20px; }
-        input, textarea {
-            width: 100%; padding: 16px 20px; 
-            background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
-            border-radius: 16px; color: white; font-size: 1rem; font-family: inherit;
-            transition: 0.3s;
+        /* Festive Candy Cane Border Top */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 8px;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--christmas-red),
+                var(--christmas-red) 20px,
+                var(--snow-white) 20px,
+                var(--snow-white) 40px,
+                var(--christmas-green) 40px,
+                var(--christmas-green) 60px
+            );
         }
-        input:focus, textarea:focus { outline: none; border-color: var(--primary); background: rgba(0,0,0,0.5); }
-        input::placeholder { color: rgba(255,255,255,0.2); }
 
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- INPUTS --- */
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 700; color: var(--christmas-green); font-size: 0.95rem; }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e1e1e1;
+            border-radius: 14px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.6);
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--christmas-red);
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(214, 40, 40, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* --- BUTTONS --- */
         .btn {
-            width: 100%; padding: 18px; border: none; border-radius: 18px;
-            font-size: 1rem; font-weight: 600; cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: linear-gradient(135deg, var(--christmas-red), #9b2226);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 15px rgba(214, 40, 40, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
         }
-        .btn:active { transform: scale(0.97); }
+
+        .btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(214, 40, 40, 0.5);
+        }
         
-        .btn-primary { 
-            background: linear-gradient(135deg, var(--primary), #be123c); 
-            color: white; 
-            box-shadow: 0 8px 20px rgba(244, 63, 94, 0.3);
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
         }
+        .btn:hover::before { left: 100%; }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--christmas-green), #1b4332);
+            box-shadow: 0 4px 15px rgba(45, 106, 79, 0.4);
+        }
+
         .btn-gold {
-            background: linear-gradient(135deg, var(--gold), #d97706);
-            color: #1e1e1e;
-            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.2);
-        }
-        .btn-ghost { background: transparent; color: var(--text-muted); margin-top: 10px; }
-
-        /* --- 🍱 BENTO GRID DASHBOARD (UX UPGRADE) --- */
-        .dashboard-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
-        }
-        .user-avatar {
-            width: 45px; height: 45px; background: var(--glass-bg); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid var(--glass-border);
+            background: linear-gradient(135deg, var(--christmas-gold), #e09f3e);
+            color: #4a3b00;
+            box-shadow: 0 4px 15px rgba(244, 211, 94, 0.4);
         }
 
-        .bento-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+        .btn-logout {
+            background: #343a40;
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            box-shadow: none;
+            width: auto;
+            border-radius: 12px;
         }
-        .bento-card {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-            border-radius: 22px; padding: 20px; cursor: pointer; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-            aspect-ratio: 1/1; transition: 0.3s;
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            width: auto;
+            border-radius: 8px;
+            box-shadow: none;
+            background: #e9ecef;
+            color: #333;
+            cursor: pointer;
+            border: 1px solid #ccc;
         }
-        .bento-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); }
-        .bento-icon { font-size: 2.2rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
-        .bento-label { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
-        
-        .bento-wide { grid-column: span 2; aspect-ratio: 2.4/1; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); border-color: rgba(16, 185, 129, 0.3); align-items: flex-start; text-align: left; padding: 25px; }
-        
-        .status-pill { background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px; display: inline-block; }
+        .btn-sm:hover { background: #dee2e6; transform: none; box-shadow: none; }
 
-        /* --- 💬 CHAT UI --- */
-        .chat-container { display: flex; flex-direction: column; height: 100%; }
-        .chat-body { flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
-        
-        .msg-bubble { max-width: 80%; padding: 14px 18px; border-radius: 20px; font-size: 0.95rem; line-height: 1.5; }
-        .msg-sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.2); }
-        .msg-received { align-self: flex-start; background: rgba(255,255,255,0.1); color: var(--text-main); border-bottom-left-radius: 4px; border: 1px solid var(--glass-border); }
-        
-        /* --- 🔔 TOAST --- */
-        #toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: white; color: var(--bg-dark); padding: 12px 24px; border-radius: 50px;
-            font-weight: 600; box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 100;
-            display: flex; align-items: center; gap: 10px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* --- DASHBOARD GRIDS --- */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
         }
-        #toast.show { transform: translateX(-50%) translateY(0); }
 
-        /* Utils */
+        /* --- STATUS BADGES --- */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-pending { background: #ffe5e5; color: #c92a2a; border: 1px solid #ffc9c9; }
+        .status-completed { background: #fff3bf; color: #a67f0d; border: 1px solid #ffec99; }
+        .status-approved { background: #d3f9d8; color: #2b8a3e; border: 1px solid #b2f2bb; }
+
+        /* --- SPIN WHEEL MAGIC --- */
+        .wheel-wrapper {
+            position: relative;
+            width: 340px;
+            height: 340px;
+            margin: 0 auto;
+            padding: 10px;
+            background: radial-gradient(circle, #fff, #f1faee);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(244, 211, 94, 0.3), inset 0 0 20px rgba(0,0,0,0.1);
+            border: 4px solid var(--christmas-gold);
+        }
+        
+        #wheelCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 50%;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4));
+            font-size: 3rem;
+            color: var(--christmas-red);
+        }
+
+        /* --- CHAT UI --- */
+        .chat-container {
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 15px;
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .chat-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        .chat-box::-webkit-scrollbar { width: 6px; }
+        .chat-box::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .msg-sent {
+            align-self: flex-end;
+            background: var(--christmas-green);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg-received {
+            align-self: flex-start;
+            background: white;
+            color: var(--text-main);
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg-meta {
+            font-size: 0.65rem;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: right;
+            font-weight: 700;
+        }
+
+        /* --- CONFETTI CANVAS --- */
+        #confetti-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* --- UTILITIES --- */
         .hidden { display: none !important; }
         .text-center { text-align: center; }
-        .w-full { width: 100%; }
-        .back-nav { display: flex; align-items: center; gap: 10px; color: var(--text-muted); margin-bottom: 20px; cursor: pointer; font-size: 0.9rem; }
+        .flex-row { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+        .mt-4 { margin-top: 1.5rem; }
+        
+        #toast {
+            visibility: hidden;
+            min-width: 300px;
+            background: rgba(11, 79, 40, 0.95);
+            color: #fff;
+            text-align: center;
+            border-radius: 50px;
+            padding: 16px 24px;
+            position: fixed;
+            z-index: 2000;
+            left: 50%;
+            bottom: 40px;
+            transform: translateX(-50%);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            font-weight: 700;
+            font-size: 1rem;
+            border: 2px solid var(--christmas-gold);
+        }
+        #toast.show { visibility: visible; animation: fadeUp 0.5s, fadeOut 0.5s 2.5s forwards; }
+
+        @keyframes fadeUp { from {bottom: 0; opacity: 0;} to {bottom: 40px; opacity: 1;} }
+        @keyframes fadeOut { from {bottom: 40px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            header h1 { font-size: 2.5rem; }
+            .card { padding: 1.5rem; border-radius: 16px; }
+            .wheel-wrapper { width: 280px; height: 280px; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="snow-layer" id="snow-bg"></div>
-    <div id="toast"><span>🔔</span><span id="toast-msg">Notification</span></div>
+    <div class="lights-overlay"></div>
+    <div id="snow-container"></div>
+    <canvas id="confetti-canvas"></canvas>
 
-    <main class="app-stage">
-        
-        <div id="view-login" class="view-section" style="justify-content: center;">
-            <div class="text-center">
-                <div style="font-size: 3rem; margin-bottom: 10px;">🎄</div>
-                <h1>ChrisMom</h1>
-                <p class="subtitle">Enter the Circle of Giving</p>
+    <div class="app-container">
+        <header class="text-center">
+            <h1><i class="fas fa-sleigh" style="margin-right: 10px;"></i>ChrisMom & ChrisChild</h1>
+            <p>The Ultimate Winter Wonderland Secret Santa</p>
+        </header>
+
+        <div id="login-screen" class="card mt-4" style="max-width: 450px; margin-left: auto; margin-right: auto;">
+            <div class="text-center mb-4">
+                <i class="fas fa-cookie-bite fa-3x" style="color: var(--christmas-gold); margin-bottom: 15px;"></i>
+                <h2 style="color: var(--christmas-red);">Welcome Back!</h2>
+                <p style="color: #666;">Enter your festive credentials</p>
             </div>
-            <form id="form-login">
-                <div class="input-group"><input type="text" id="login-user" placeholder="Your Codename" required></div>
-                <div class="input-group"><input type="password" id="login-pass" placeholder="Secret Key" required></div>
-                <button type="submit" class="btn btn-primary">Unlock 🔓</button>
-            </form>
-            <button class="btn btn-ghost" onclick="nav.to('view-register')">Register New Account</button>
+            
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="login-username" placeholder="e.g. NorthPoleAdmin">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-key"></i> Password</label>
+                <input type="password" id="login-password" placeholder="••••••••">
+            </div>
+            <button class="btn" id="btn-login">Open the Door 🚪</button>
+            <p class="text-center mt-4">New Elf? <a href="#" id="link-register" style="color: var(--christmas-green); font-weight: bold; text-decoration: none;">Join the List 📜</a></p>
         </div>
 
-        <div id="view-register" class="view-section hidden" style="justify-content: center;">
-            <div class="text-center"><h1>Join In</h1><p class="subtitle">Create your unique identity</p></div>
-            <div id="reg-status" class="glass-card hidden" style="text-align:center; color: var(--primary);">Loading status...</div>
-            <form id="form-register">
-                <div class="input-group"><input type="text" id="reg-user" placeholder="Choose Codename" required></div>
-                <div class="input-group"><input type="password" id="reg-pass" placeholder="Create Secret Key" required></div>
-                <button type="submit" class="btn btn-gold">Create Account ✨</button>
-            </form>
-            <button class="btn btn-ghost" onclick="nav.to('view-login')">Back to Login</button>
-        </div>
-
-        <div id="view-dashboard" class="view-section hidden">
-            <div class="dashboard-header">
-                <div><h2 id="dash-name" style="margin:0; font-size: 1.8rem;">Hi, User</h2><span style="font-size: 0.8rem; color: var(--text-muted);">Welcome back</span></div>
-                <div class="user-avatar" onclick="auth.logout()">⏻</div>
+        <div id="register-screen" class="card mt-4 hidden" style="max-width: 450px; margin-left: auto; margin-right: auto;">
+            <div class="text-center mb-4">
+                <i class="fas fa-snowman fa-3x" style="color: var(--christmas-green); margin-bottom: 15px;"></i>
+                <h2 style="color: var(--christmas-green);">Join the Fun</h2>
             </div>
-            <div id="dash-status-container" style="margin-bottom: 20px;"></div>
-            <div class="bento-grid">
-                <div class="bento-card bento-wide" onclick="chat.open('mom')">
-                    <span class="status-pill">Your Target</span>
-                    <h2 id="dash-target" style="margin: 5px 0 0 0; color: white;">???</h2>
-                    <p style="font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: 5px;">Tap to chat anonymously</p>
+            
+            <div id="reg-closed-msg" class="hidden text-center" style="background: #ffe5e5; padding: 20px; border-radius: 16px; color: #c92a2a; border: 2px dashed #c92a2a;">
+                <i class="fas fa-lock fa-2x mb-2"></i><br>
+                <b>Registration Closed</b><br>The sleigh has already departed!
+            </div>
+
+            <div id="reg-form-content">
+                <div class="form-group">
+                    <label>Choose a Unique Name</label>
+                    <input type="text" id="reg-username" placeholder="e.g. Rudolph23">
                 </div>
-                <div class="bento-card" onclick="task.open('send')"><div class="bento-icon">📝</div><div class="bento-label">Assign Task</div></div>
-                <div class="bento-card" onclick="chat.open('child')" style="border-color: rgba(244, 63, 94, 0.4);"><div class="bento-icon">🎅</div><div class="bento-label">Secret Mom</div></div>
-                <div class="bento-card" onclick="task.open('view')" style="border-color: rgba(244, 63, 94, 0.4);"><div class="bento-icon">🎁</div><div class="bento-label">My Gifts</div></div>
-            </div>
-        </div>
-
-        <div id="view-admin" class="view-section hidden">
-            <div class="dashboard-header"><h2>Admin Control</h2><div class="user-avatar" onclick="auth.logout()">✕</div></div>
-            <div class="glass-card">
-                <button id="btn-toggle-reg" class="btn btn-gold" style="margin-bottom: 10px;">Loading...</button>
-                <button id="btn-spin" class="btn btn-primary" style="margin-bottom: 10px;">🎡 Spin Wheel & Pair</button>
-                <button id="btn-reset" class="btn btn-ghost" style="border: 1px solid var(--glass-border);">⚠️ Factory Reset</button>
-            </div>
-            <h3 style="margin-bottom: 15px; font-size: 1.2rem;">Participants</h3>
-            <div class="glass-card" style="padding: 10px;"><div id="admin-list" style="max-height: 300px; overflow-y: auto; font-size: 0.9rem; opacity: 0.8;"></div></div>
-        </div>
-
-        <div id="view-chat" class="view-section hidden" style="background: rgba(0,0,0,0.2);">
-            <div class="back-nav" onclick="nav.to('view-dashboard')"><span>← Back</span></div>
-            <div class="glass-card chat-container" style="flex:1; margin-bottom: 0;">
-                <div style="border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; margin-bottom: 10px;">
-                    <h3 id="chat-title-name">Name</h3><span id="chat-title-role" style="font-size: 0.8rem; color: var(--gold);">Role</span>
+                <div class="form-group">
+                    <label>Secret Password</label>
+                    <input type="password" id="reg-password" placeholder="Make it memorable">
                 </div>
-                <div id="chat-box" class="chat-body"></div>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="chat-input" placeholder="Type a message..." style="margin-bottom: 0;">
-                    <button id="btn-chat-send" class="btn btn-primary" style="width: auto; padding: 0 20px;">➤</button>
+                <button class="btn btn-secondary" id="btn-register">Sign Me Up 📝</button>
+            </div>
+            <p class="text-center mt-4"><a href="#" id="link-login" style="color: var(--christmas-red); font-weight: bold; text-decoration: none;">Back to Login</a></p>
+        </div>
+
+        <div id="admin-screen" class="card hidden">
+            <div class="flex-row" style="margin-bottom: 25px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 15px;">
+                <div>
+                    <h2 style="color: var(--text-main); margin:0;">👑 Santa's Control Room</h2>
+                    <small>Manage the chaos</small>
+                </div>
+                <div>
+                    <button class="btn btn-sm" id="btn-admin-change-pass" style="background: var(--christmas-red); color: white; border: none; margin-right: 10px;">
+                        <i class="fas fa-key"></i> Change My Password
+                    </button>
+                    <button class="btn btn-logout" id="admin-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
             </div>
-        </div>
 
-        <div id="view-task-send" class="view-section hidden">
-            <div class="back-nav" onclick="nav.to('view-dashboard')"><span>← Back</span></div>
-            <div class="glass-card">
-                <span class="status-pill" style="background: rgba(251, 191, 36, 0.2); color: var(--gold);">Mission Directive</span>
-                <h3 style="margin: 10px 0;">Assign Task</h3>
-                <p style="margin-bottom: 20px; color: var(--text-muted);">Target: <b id="task-target-name" style="color: white;">Name</b></p>
-                <textarea id="task-input-text" rows="4" placeholder="e.g. Sing a Christmas Carol..."></textarea>
-                <button id="btn-task-send" class="btn btn-gold" style="margin-top: 15px;">Send Directive 🚀</button>
+            <div class="grid-2">
+                <div style="background: rgba(255,255,255,0.7); padding: 25px; border-radius: 20px; border: 1px solid white;">
+                    <h3 style="color: var(--christmas-red); margin-bottom: 20px;"><i class="fas fa-cogs"></i> Game Settings</h3>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        <span><i class="fas fa-clipboard-list"></i> Registration: <span id="reg-status-display" style="font-weight:800;">OPEN</span></span>
+                        <button id="btn-toggle-reg" class="btn btn-secondary" style="width: auto; padding: 8px 20px; font-size: 0.8rem;">Toggle</button>
+                    </div>
+
+                    <button id="btn-reveal-all" class="btn btn-gold mt-4"><i class="fas fa-gift"></i> REVEAL ALL IDENTITIES</button>
+                    <button id="btn-reset-game" class="btn" style="background: #212529; margin-top: 15px; font-size: 0.9rem;"><i class="fas fa-trash-alt"></i> RESET & DELETE ALL DATA</button>
+                </div>
+
+                <div class="text-center">
+                    <h3 style="color: var(--christmas-green); margin-bottom: 15px;">The Sorting Wheel</h3>
+                    <div class="wheel-wrapper">
+                        <div class="wheel-pointer"><i class="fas fa-caret-down"></i></div>
+                        <canvas id="wheelCanvas" width="320" height="320"></canvas>
+                    </div>
+                    <button id="btn-spin" class="btn btn-gold mt-4" style="max-width: 250px;">🎡 SPIN TO PAIR</button>
+                    <p id="spin-result" style="margin-top: 15px; font-weight: 800; color: var(--christmas-green); font-size: 1.1rem;"></p>
+                </div>
             </div>
-            <h3 style="margin: 20px 0 10px; font-size: 1.1rem;">History</h3>
-            <div id="task-history-sent"></div>
+
+            <div class="grid-2 mt-4">
+                <div>
+                    <h3><i class="fas fa-users"></i> Elves List</h3>
+                    <div style="background: white; border-radius: 16px; height: 250px; overflow-y: auto; padding: 10px; border: 1px solid #eee;">
+                        <table style="width:100%; border-collapse: collapse;">
+                            <thead style="background: #f8f9fa; position: sticky; top: 0;">
+                                <tr>
+                                    <th style="padding:10px; text-align:left; color:#666;">Name</th>
+                                    <th style="padding:10px; text-align:right; color:#666;">Password</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h3><i class="fas fa-link"></i> Secret Connections</h3>
+                    <div style="background: white; border-radius: 16px; height: 250px; overflow-y: auto; padding: 10px; border: 1px solid #eee;">
+                        <table style="width:100%; border-collapse: collapse;">
+                            <thead style="background: #f8f9fa; position: sticky; top: 0;">
+                                <tr><th style="padding:10px; text-align:left; color:#666;">ChrisMom</th><th style="padding:10px; text-align:center;"></th><th style="padding:10px; text-align:left; color:#666;">Child</th></tr>
+                            </thead>
+                            <tbody id="admin-pairings-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div id="view-task-receive" class="view-section hidden">
-            <div class="back-nav" onclick="nav.to('view-dashboard')"><span>← Back</span></div>
-            <h1 style="font-size: 2.2rem; margin-bottom: 20px;">My Tasks</h1>
-            <div id="task-list-receive"></div>
+        <div id="user-screen" class="hidden">
+            <div class="flex-row" style="margin-bottom: 2rem;">
+                <div style="color: var(--text-light); text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+                    <h2 style="margin:0; font-size: 2.2rem;">Hello, <span id="display-username" style="color: var(--christmas-gold);">User</span>! 🎅</h2>
+                    <small style="font-size: 1rem; opacity: 0.9;">Your Secret Mission awaits...</small>
+                </div>
+                <button class="btn btn-logout" id="user-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3 style="color: var(--christmas-red);"><i class="fas fa-gift"></i> You are ChrisMom to:</h3>
+                    
+                    <div id="mom-waiting-msg" class="text-center" style="padding: 40px 0; color: #666;">
+                        <i class="fas fa-snowflake fa-spin fa-3x" style="color: #ccc; margin-bottom: 20px;"></i>
+                        <p>Waiting for Santa (Admin) to spin the wheel!</p>
+                    </div>
+
+                    <div id="mom-panel-content" class="hidden">
+                        <div class="text-center" style="background: linear-gradient(135deg, #fff5f5, #fff); padding: 25px; border-radius: 20px; border: 2px dashed var(--christmas-red); margin: 20px 0; box-shadow: 0 4px 15px rgba(214, 40, 40, 0.1);">
+                            <h2 id="my-child-name" style="color:var(--christmas-red); font-size: 2.5rem; margin:0; letter-spacing: 1px;">???</h2>
+                            <small style="color: #999; font-weight: 700;">SHH! IT'S A SECRET!</small>
+                        </div>
+                        
+                        <h4 style="color: var(--text-main); margin-top: 25px;"><i class="fas fa-tasks"></i> Assign a Task</h4>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <textarea id="task-input" rows="2" placeholder="e.g. Draw a snowman, Sing Jingle Bells..."></textarea>
+                            <button id="btn-send-task" class="btn btn-secondary mt-4"><i class="fas fa-paper-plane"></i> Send Challenge</button>
+                        </div>
+                        
+                        <h4 class="mt-4"><i class="fas fa-clipboard-check"></i> Review Child's Tasks</h4>
+                        <div id="mom-review-list" style="height:200px; overflow-y:auto; background:white; padding:15px; border-radius:16px; border: 1px solid #e1e1e1;">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: var(--christmas-green);"><i class="fas fa-baby"></i> Your ChrisMom says:</h3>
+                    
+                    <div id="child-panel-content" class="hidden">
+                        <div class="text-center" style="margin-bottom: 20px;">
+                            <span style="font-size: 0.9rem; color: #666;">Your Secret Santa is:</span>
+                            <h2 id="my-mom-name" style="color:var(--christmas-green); font-size: 2rem;">SECRET 🤫</h2>
+                        </div>
+                        
+                        <div id="active-task-container" style="background: linear-gradient(135deg, #fffbeb, #fff); padding: 25px; border-radius: 20px; border: 2px solid var(--christmas-gold); box-shadow: 0 8px 20px rgba(244, 211, 94, 0.15);">
+                            <h4 style="color: #b45309; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;"><i class="fas fa-star"></i> Today's Challenge</h4>
+                            <p id="current-task-text" style="font-size: 1.4rem; font-weight: 800; margin: 15px 0; color: #333; line-height: 1.3;">No active tasks yet.</p>
+                            
+                            <div id="task-action-area" class="hidden">
+                                <button id="btn-complete-task" class="btn btn-gold">Mark as Done ✅</button>
+                            </div>
+                            <p id="task-status-msg" class="text-center" style="font-style:italic; font-size:0.9rem; margin-top: 15px; color: #666;"></p>
+                        </div>
+
+                        <h4 class="mt-4"><i class="fas fa-history"></i> Task History</h4>
+                        <ul id="child-task-history" style="font-size:0.9rem; padding-left:20px; line-height: 1.8; color: #555;"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4 hidden" id="chat-section">
+                <div class="text-center mb-4">
+                    <h3><i class="fas fa-comments"></i> North Pole Communication Line</h3>
+                    <p style="opacity: 0.7;">Chat anonymously. Your identity is encrypted by elf magic!</p>
+                </div>
+                
+                <div class="grid-2">
+                    <div>
+                        <h4 class="text-center" style="color: var(--christmas-red); margin-bottom: 10px;">To Your Child 👶</h4>
+                        <div class="chat-container">
+                            <div class="chat-box" id="chat-box-child"></div>
+                            <div class="flex-row" style="gap: 10px;">
+                                <input type="text" id="msg-input-child" placeholder="Type a message..." style="padding: 12px;">
+                                <button class="btn btn-secondary" style="width:auto; padding: 12px 18px; border-radius: 14px;" id="btn-send-child"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-center" style="color: var(--christmas-green); margin-bottom: 10px;">To Your ChrisMom 🎅</h4>
+                        <div class="chat-container">
+                            <div class="chat-box" id="chat-box-mom"></div>
+                            <div class="flex-row" style="gap: 10px;">
+                                <input type="text" id="msg-input-mom" placeholder="Type a message..." style="padding: 12px;">
+                                <button class="btn btn-secondary" style="width:auto; padding: 12px 18px; border-radius: 14px;" id="btn-send-mom"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </main>
+
+        <footer style="text-align: center; margin-top: 3rem; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+            <p>Made with <i class="fas fa-heart" style="color: var(--christmas-red);"></i> & <i class="fas fa-snowflake" style="color: #fff;"></i> by Event Team</p>
+        </footer>
+    </div>
+
+    <div id="toast">Notification</div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, onSnapshot, query, where, orderBy, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        // Importing standard Modular SDK functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, onSnapshot, query, where, addDoc, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // ==========================================
-        // 🔴 USER FIREBASE CONFIG INTEGRATION 🔴
-        // ==========================================
+        // --- FIREBASE CONFIG (Updated with your credentials) ---
         const firebaseConfig = {
-          apiKey: "AIzaSyD9H6lcZ2rVjzX-_x93xpFn1efK9khEgPw",
-          authDomain: "chrismom-a52a8.firebaseapp.com",
-          projectId: "chrismom-a52a8",
-          storageBucket: "chrismom-a52a8.firebasestorage.app",
-          messagingSenderId: "227031044852",
-          appId: "1:227031044852:web:0e6db2c8037b4abfc4c4a1",
-          measurementId: "G-BV9WXB69GN"
+            apiKey: "AIzaSyD9H6lcZ2rVjzX-_x93xpFn1efK9khEgPw",
+            authDomain: "chrismom-a52a8.firebaseapp.com",
+            projectId: "chrismom-a52a8",
+            storageBucket: "chrismom-a52a8.firebasestorage.app",
+            messagingSenderId: "227031044852",
+            appId: "1:227031044852:web:0e6db2c8037b4abfc4c4a1",
+            measurementId: "G-BV9WXB69GN"
         };
 
-        // Initialize Firebase
-        let db;
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            console.log("Firebase Connected");
-        } catch (e) {
-            console.error("Firebase Error", e);
-            alert("Error: Firebase Connection Failed. Check console.");
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app); 
+        const db = getFirestore(app);
+
+        // --- STATE ---
+        let currentUser = null;
+        let myChild = null;
+        let myMom = null;
+        let gameConfig = { registrationOpen: true, revealed: false };
+
+        // --- DOM HELPER ---
+        const getEl = (id) => document.getElementById(id);
+        const screens = {
+            login: getEl('login-screen'),
+            register: getEl('register-screen'),
+            admin: getEl('admin-screen'),
+            user: getEl('user-screen')
+        };
+
+        // --- VISUAL EFFECTS ENGINE ---
+        
+        // 1. Snowfall
+        function createSnow() {
+            const container = getEl('snow-container');
+            const particleCount = 50; 
+            for(let i=0; i<particleCount; i++) {
+                const snow = document.createElement('div');
+                snow.className = 'snowflake';
+                snow.innerHTML = ['❄', '❅', '❆'][Math.floor(Math.random()*3)];
+                snow.style.left = Math.random() * 100 + 'vw';
+                snow.style.animationDuration = Math.random() * 5 + 5 + 's';
+                snow.style.opacity = Math.random() * 0.6 + 0.2;
+                snow.style.fontSize = Math.random() * 15 + 10 + 'px';
+                snow.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(snow);
+            }
+        }
+        createSnow();
+
+        // 2. Confetti Cannon (Canvas)
+        const canvas = getEl('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let confettiParticles = [];
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function fireConfetti() {
+            confettiParticles = [];
+            for (let i = 0; i < 150; i++) {
+                confettiParticles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    w: Math.random() * 10 + 5,
+                    h: Math.random() * 10 + 5,
+                    color: ['#D62828', '#2D6A4F', '#F4D35E', '#FFFFFF'][Math.floor(Math.random() * 4)],
+                    vx: (Math.random() - 0.5) * 20,
+                    vy: (Math.random() - 0.5) * 20,
+                    gravity: 0.5,
+                    drag: 0.96
+                });
+            }
+            animateConfetti();
         }
 
-        // --- GLOBAL STATE ---
-        const state = {
-            currentUser: sessionStorage.getItem('user') || null,
-            users: [],
-            config: { regOpen: true, paired: false },
-            pairs: {},
-            chatUnsub: null,
-            taskUnsub: null,
-            chatCtx: null
-        };
-
-        // --- UI UTILS ---
-        const toast = (msg, icon='🔔') => {
-            const t = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = msg;
-            t.firstElementChild.innerText = icon;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
-        };
-
-        const nav = {
-            to: (id) => {
-                document.querySelectorAll('.view-section').forEach(d => d.classList.add('hidden'));
-                document.getElementById(id).classList.remove('hidden');
-            }
-        };
-
-        // --- FX ---
-        const initSnow = () => {
-            const c = document.getElementById('snow-bg');
-            for(let i=0; i<30; i++){
-                const s = document.createElement('div');
-                s.className = 'snowflake';
-                s.style.left = Math.random()*100 + '%';
-                s.style.animationDuration = Math.random()*5 + 5 + 's';
-                s.style.width = s.style.height = (Math.random()*4+2) + 'px';
-                c.appendChild(s);
-            }
-        };
-
-        // --- DATA SYNC ---
-        const loadGlobalData = async () => {
-            // Get Config
-            const configSnap = await getDoc(doc(db, "global", "config"));
-            if(configSnap.exists()) state.config = configSnap.data();
-            else await setDoc(doc(db, "global", "config"), state.config); // Create default
-
-            // Get Pairs
-            const pairSnap = await getDoc(doc(db, "global", "pairs"));
-            if(pairSnap.exists()) state.pairs = pairSnap.data();
+        function animateConfetti() {
+            if (confettiParticles.length === 0) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Get Users (for Admin/Login check)
-            const uSnap = await getDocs(collection(db, "users"));
-            state.users = [];
-            uSnap.forEach(d => state.users.push(d.data()));
-        };
-
-        // --- AUTH ---
-        window.auth = {
-            login: async (e) => {
-                e.preventDefault();
-                await loadGlobalData(); // Refresh data
-                const u = document.getElementById('login-user').value.trim();
-                const p = document.getElementById('login-pass').value.trim();
-
-                if(u === 'ADMIN' && p === 'admin') {
-                    state.currentUser = 'ADMIN';
-                    sessionStorage.setItem('user', 'ADMIN');
-                    setupAdmin();
-                    return;
-                }
-
-                const valid = state.users.find(x => x.u === u && x.p === p);
-                if(valid) {
-                    state.currentUser = valid.u;
-                    sessionStorage.setItem('user', valid.u);
-                    setupDashboard();
-                } else {
-                    toast('Invalid Credentials', '❌');
-                }
-            },
-            register: async (e) => {
-                e.preventDefault();
-                await loadGlobalData();
-                if(!state.config.regOpen) return toast('Registration Closed', '🔒');
+            confettiParticles.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += p.gravity;
+                p.vx *= p.drag;
+                p.vy *= p.drag;
                 
-                const u = document.getElementById('reg-user').value.trim();
-                const p = document.getElementById('reg-pass').value.trim();
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.w, p.h);
                 
-                if(u.toUpperCase() === 'ADMIN' || state.users.find(x => x.u.toLowerCase() === u.toLowerCase()))
-                    return toast('Username Taken', '⚠️');
-                
-                await addDoc(collection(db, "users"), {u, p});
-                toast('Account Created!', '✨');
-                nav.to('view-login');
-            },
-            logout: () => {
-                sessionStorage.clear();
-                location.reload();
-            }
-        };
-
-        // --- DASHBOARD LOGIC ---
-        const setupDashboard = async () => {
-            await loadGlobalData();
-            nav.to('view-dashboard');
-            document.getElementById('dash-name').innerText = `Hi, ${state.currentUser}`;
+                if (p.y > canvas.height) confettiParticles.splice(index, 1);
+            });
             
-            const statusContainer = document.getElementById('dash-status-container');
-            const targetEl = document.getElementById('dash-target');
-            
-            if(state.config.paired) {
-                statusContainer.innerHTML = `<div class="glass-card" style="padding:15px; background: rgba(16, 185, 129, 0.1); border-color: var(--secondary); text-align:center; color: var(--secondary); font-weight:bold;">🟢 Game is Live</div>`;
-                targetEl.innerText = state.pairs[state.currentUser] || "Error";
+            requestAnimationFrame(animateConfetti);
+        }
+
+        // --- AUTH & SESSION ---
+        const sessionUser = sessionStorage.getItem('currentUser');
+        if (sessionUser) handleLoginSuccess(JSON.parse(sessionUser));
+
+        onSnapshot(doc(db, "config", "settings"), (docSnap) => {
+            if (docSnap.exists()) {
+                gameConfig = docSnap.data();
+                updateUIBasedOnConfig();
             } else {
-                statusContainer.innerHTML = `<div class="glass-card" style="padding:15px; text-align:center; color: var(--text-muted);">🟠 Waiting for Admin...</div>`;
-                targetEl.innerText = "???";
+                setDoc(doc(db, "config", "settings"), { registrationOpen: true, revealed: false })
+                    .catch(e => console.error("Error creating config, check Security Rules", e));
             }
-        };
+        });
 
-        // --- ADMIN LOGIC ---
-        const setupAdmin = async () => {
-            await loadGlobalData();
-            nav.to('view-admin');
-            renderAdminUI();
-        };
-
-        const renderAdminUI = () => {
-            const regBtn = document.getElementById('btn-toggle-reg');
-            regBtn.innerText = state.config.regOpen ? "🔒 Close Registration" : "🔓 Open Registration";
-            regBtn.onclick = async () => {
-                await updateDoc(doc(db, "global", "config"), { regOpen: !state.config.regOpen });
-                state.config.regOpen = !state.config.regOpen;
-                renderAdminUI();
-                toast("Updated");
-            };
-
-            const spinBtn = document.getElementById('btn-spin');
-            spinBtn.onclick = async () => {
-                if(state.users.length < 2) return toast("Not enough users", '📉');
-                const users = state.users.map(u => u.u);
-                // Shuffle
-                for (let i = users.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [users[i], users[j]] = [users[j], users[i]];
-                }
-                const newPairs = {};
-                for(let i=0; i<users.length; i++) newPairs[users[i]] = users[(i+1)%users.length];
-                
-                await setDoc(doc(db, "global", "pairs"), newPairs);
-                await updateDoc(doc(db, "global", "config"), { paired: true });
-                state.pairs = newPairs;
-                state.config.paired = true;
-                toast("Pairs Generated", '🎡');
-                renderAdminUI();
-            };
+        function updateUIBasedOnConfig() {
+            const isOpen = gameConfig.registrationOpen;
+            getEl('reg-status-display').innerText = isOpen ? "OPEN" : "CLOSED";
+            getEl('reg-status-display').style.color = isOpen ? "var(--christmas-green)" : "var(--christmas-red)";
             
-            // Render List
-            const list = document.getElementById('admin-list');
-            list.innerHTML = state.users.map(u => 
-                `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between;">
-                    <span>${u.u}</span> <span>→ ${state.pairs[u.u] || '...'}</span>
-                </div>`
-            ).join('');
-        };
-        
-        document.getElementById('btn-reset').onclick = async () => {
-             if(confirm("Factory Reset? This deletes all data.")) {
-                 await setDoc(doc(db, "global", "pairs"), {});
-                 await updateDoc(doc(db, "global", "config"), { paired: false, regOpen: true });
-                 alert("Reset Config & Pairs. Users remain.");
-                 location.reload();
-             }
-        };
+            if(isOpen) {
+                getEl('reg-form-content').classList.remove('hidden');
+                getEl('reg-closed-msg').classList.add('hidden');
+                getEl('btn-toggle-reg').innerText = "Close Registration";
+            } else {
+                getEl('reg-form-content').classList.add('hidden');
+                getEl('reg-closed-msg').classList.remove('hidden');
+                getEl('btn-toggle-reg').innerText = "Open Registration";
+            }
 
-
-        // --- CHAT LOGIC ---
-        window.chat = {
-            open: (role) => {
-                if(!state.config.paired) return toast('Game not active', '⏳');
-                const me = state.currentUser;
-                let mom, child, title, subtitle;
-
-                if(role === 'mom') {
-                    mom = me; child = state.pairs[me]; title = child; subtitle = "Your Target 🎯";
+            if (currentUser && currentUser.username !== 'ADMIN') {
+                if (gameConfig.revealed) {
+                    if (myChild) getEl('my-child-name').innerText = myChild;
+                    if (myMom) getEl('my-mom-name').innerText = myMom;
                 } else {
-                    child = me; mom = Object.keys(state.pairs).find(k => state.pairs[k] === me); title = "Secret ChrisMom"; subtitle = "Identity Hidden 🎅";
+                    if (myChild) getEl('my-child-name').innerText = myChild;
+                    getEl('my-mom-name').innerText = "SECRET 🤫";
                 }
+            }
+        }
 
-                if(!mom || !child) return toast('Pairing Error');
+        // --- AUTH HANDLERS ---
+        getEl('btn-login').addEventListener('click', async () => {
+            const u = getEl('login-username').value.trim();
+            const p = getEl('login-password').value.trim();
+            if(!u || !p) return showToast("Please fill all fields 🎅");
 
-                state.chatCtx = { id: `${mom}_${child}`, role, mom, child };
-                document.getElementById('chat-title-name').innerText = title;
-                document.getElementById('chat-title-role').innerText = subtitle;
-                nav.to('view-chat');
-                
-                // Realtime Listener
-                if(state.chatUnsub) state.chatUnsub(); 
-                const q = query(collection(db, "chats"), where("id", "==", state.chatCtx.id), orderBy("ts", "asc"));
-                state.chatUnsub = onSnapshot(q, (snap) => {
-                    const box = document.getElementById('chat-box');
-                    box.innerHTML = "";
-                    snap.forEach(doc => {
-                        const m = doc.data();
-                        const isMe = m.sender === state.currentUser;
-                        box.innerHTML += `<div class="msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}">${m.msg}</div>`;
+            // UPDATED ADMIN LOGIN LOGIC
+            if(u === 'ADMIN') {
+                try {
+                    const adminRef = doc(db, "users", "ADMIN");
+                    const adminSnap = await getDoc(adminRef);
+
+                    if (!adminSnap.exists()) {
+                        // First time login for ADMIN? Check for default 'admin' password
+                        if (p === 'admin') {
+                            // Create the DB entry so we can change password later
+                            const adminData = { username: 'ADMIN', password: 'admin', role: 'admin' };
+                            await setDoc(adminRef, adminData);
+                            sessionStorage.setItem('currentUser', JSON.stringify(adminData));
+                            handleLoginSuccess(adminData);
+                            showToast("Admin account initialized! Please change password.");
+                        } else {
+                            showToast("Invalid Admin Credentials");
+                        }
+                    } else {
+                        // Admin exists in DB, check DB password
+                        const adminData = adminSnap.data();
+                        if (adminData.password === p) {
+                            sessionStorage.setItem('currentUser', JSON.stringify(adminData));
+                            handleLoginSuccess(adminData);
+                        } else {
+                            showToast("Invalid Admin Password");
+                        }
+                    }
+                } catch(e) {
+                    console.error(e);
+                    showToast("Login Error: Check Console");
+                }
+                return;
+            }
+
+            // Regular User Login
+            try {
+                const userDoc = await getDoc(doc(db, "users", u));
+                if(userDoc.exists() && userDoc.data().password === p) {
+                    sessionStorage.setItem('currentUser', JSON.stringify(userDoc.data()));
+                    handleLoginSuccess(userDoc.data());
+                } else {
+                    showToast("Naughty List! Check credentials. 📜");
+                }
+            } catch(e) { console.error(e); showToast("Login Error (Check DB Rules)"); }
+        });
+
+        getEl('link-register').onclick = (e) => { e.preventDefault(); toggleScreen('register'); };
+        getEl('link-login').onclick = (e) => { e.preventDefault(); toggleScreen('login'); };
+
+        getEl('btn-register').addEventListener('click', async () => {
+            if(!gameConfig.registrationOpen) return showToast("Registration is currently closed!");
+            
+            const u = getEl('reg-username').value.trim();
+            const p = getEl('reg-password').value.trim();
+            if(!u || !p) return showToast("Please fill all fields 🎁");
+            if(u.toUpperCase() === 'ADMIN') return showToast("Nice try, Elf!");
+
+            try {
+                const check = await getDoc(doc(db, "users", u));
+                if(check.exists()) return showToast("Username already taken! 😔");
+
+                await setDoc(doc(db, "users", u), { username: u, password: p, role: 'user', joinedAt: serverTimestamp() });
+                showToast("Welcome to the North Pole! Please Login.");
+                toggleScreen('login');
+            } catch(e) { console.error(e); showToast("Reg Error (Check DB Rules)"); }
+        });
+
+        getEl('admin-logout').onclick = logout;
+        getEl('user-logout').onclick = logout;
+
+        function logout() {
+            sessionStorage.clear();
+            location.reload();
+        }
+
+        function handleLoginSuccess(user) {
+            currentUser = user;
+            getEl('login-username').value = "";
+            getEl('login-password').value = "";
+            
+            if(user.role === 'admin') {
+                toggleScreen('admin');
+                initAdminPanel();
+            } else {
+                toggleScreen('user');
+                initUserPanel(user.username);
+            }
+        }
+
+        function toggleScreen(name) {
+            Object.values(screens).forEach(el => el.classList.add('hidden'));
+            screens[name].classList.remove('hidden');
+        }
+
+        function showToast(msg) {
+            const t = getEl('toast');
+            t.innerHTML = `<i class="fas fa-bell"></i> ${msg}`;
+            t.className = "show";
+            setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
+        }
+
+        // --- ADMIN PANEL ---
+        function initAdminPanel() {
+            // Admin Change Password Logic
+            getEl('btn-admin-change-pass').onclick = async () => {
+                const newPass = prompt("Enter new password for Admin:");
+                if (newPass && newPass.length > 0) {
+                    try {
+                        await updateDoc(doc(db, "users", "ADMIN"), { password: newPass });
+                        showToast("Admin Password Updated Successfully! 🔐");
+                    } catch (e) {
+                        console.error(e);
+                        showToast("Failed to update password.");
+                    }
+                }
+            };
+
+            onSnapshot(collection(db, "users"), (snap) => {
+                const tbody = getEl('admin-users-table');
+                tbody.innerHTML = "";
+                snap.forEach(d => {
+                    const userData = d.data();
+                    // Don't show ADMIN in the management list itself to avoid confusion
+                    if (userData.username === 'ADMIN') return;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="padding:10px; border-bottom:1px solid #eee;">${d.id}</td>
+                            <td style="padding:10px; border-bottom:1px solid #eee; text-align:right;">
+                                <button class="btn btn-sm" onclick="window.changePass('${d.id}')">Manage <i class="fas fa-key"></i></button>
+                            </td>
+                        </tr>`;
+                });
+            });
+
+            onSnapshot(doc(db, "game", "pairings"), (snap) => {
+                const tbody = getEl('admin-pairings-table');
+                tbody.innerHTML = "";
+                if(snap.exists()) {
+                    const pairs = snap.data().list || [];
+                    pairs.forEach(p => {
+                        tbody.innerHTML += `<tr><td style="padding:10px;">${p.mom}</td><td class="text-center"><i class="fas fa-arrow-right" style="color:#ccc;"></i></td><td style="padding:10px;">${p.child}</td></tr>`;
                     });
-                    box.scrollTop = box.scrollHeight;
-                });
-            },
-            send: async () => {
-                const txt = document.getElementById('chat-input').value.trim();
-                if(!txt) return;
-                await addDoc(collection(db, "chats"), {
-                    id: state.chatCtx.id,
-                    sender: state.currentUser,
-                    msg: txt,
-                    ts: Date.now()
-                });
-                document.getElementById('chat-input').value = "";
+                }
+            });
+
+            getEl('btn-toggle-reg').onclick = async () => {
+                await updateDoc(doc(db, "config", "settings"), { registrationOpen: !gameConfig.registrationOpen });
+            };
+
+            getEl('btn-reveal-all').onclick = async () => {
+                if(confirm("⚠ WARNING: This will reveal everyone's secret! Continue?")) {
+                    await updateDoc(doc(db, "config", "settings"), { revealed: true });
+                    fireConfetti();
+                    showToast("Identities Revealed to All! 🎁");
+                }
+            };
+
+            // FULL RESET LOGIC
+            getEl('btn-reset-game').onclick = async () => {
+                if(prompt("Type 'DELETE' to permanently wipe ALL users, tasks, and data.") === 'DELETE') {
+                    showToast("Deleting all data... Please wait.");
+                    
+                    const userSnap = await getDocs(collection(db, "users"));
+                    const batch = writeBatch(db);
+                    
+                    // Delete all users EXCEPT Admin
+                    userSnap.forEach((doc) => {
+                        if (doc.id !== 'ADMIN') {
+                            batch.delete(doc.ref);
+                        }
+                    });
+                    
+                    const taskSnap = await getDocs(collection(db, "tasks"));
+                    taskSnap.forEach((doc) => batch.delete(doc.ref));
+
+                    await batch.commit();
+
+                    await setDoc(doc(db, "game", "pairings"), { list: [] });
+                    await updateDoc(doc(db, "config", "settings"), { revealed: false, registrationOpen: true });
+                    
+                    showToast("Complete Reset Successful. All data deleted.");
+                }
+            };
+
+            initSpinWheel();
+        }
+
+        // Global functions for Button actions
+        window.changePass = async (username) => {
+            const newPass = prompt(`Enter new password for ${username}:`);
+            if(newPass && newPass.length > 0) {
+                try {
+                    await updateDoc(doc(db, "users", username), { password: newPass });
+                    showToast(`Password updated for ${username}`);
+                } catch(e) {
+                    showToast("Error updating password");
+                    console.error(e);
+                }
             }
         };
-        document.getElementById('btn-chat-send').onclick = chat.send;
+
+        // --- SPIN WHEEL LOGIC ---
+        async function initSpinWheel() {
+            const wheelCanvas = getEl('wheelCanvas');
+            const wCtx = wheelCanvas.getContext('2d');
+            let users = [];
+            
+            // Initial load for visualization
+            const uSnap = await getDocs(collection(db, "users"));
+            uSnap.forEach(d => {
+                const userData = d.data();
+                // EXCLUDE ADMIN FROM VISUALIZATION
+                if (userData.username !== 'ADMIN' && userData.role !== 'admin') {
+                    users.push(d.id);
+                }
+            });
+            if(users.length > 0) drawWheel(wCtx, users, 0);
+
+            getEl('btn-spin').onclick = async () => {
+                users = [];
+                const freshSnap = await getDocs(collection(db, "users"));
+                freshSnap.forEach(d => {
+                    const userData = d.data();
+                    // EXCLUDE ADMIN FROM PAIRING LOGIC
+                    if (userData.username !== 'ADMIN' && userData.role !== 'admin') {
+                        users.push(d.id);
+                    }
+                });
+
+                if(users.length < 2) return showToast("Need at least 2 Elves (Users) to pair!");
+
+                let startAngle = 0;
+                let spinTime = 0;
+                let spinTimeTotal = 4000;
+                let rotateAngle = 0;
+
+                users.sort(() => Math.random() - 0.5); // Shuffle
+
+                const animate = () => {
+                    spinTime += 20;
+                    if(spinTime >= spinTimeTotal) {
+                        stopAnimation();
+                        return;
+                    }
+                    const spinAngleStart = Math.random() * 10 + 10;
+                    const spinAngle = spinAngleStart - (spinAngleStart * spinTime) / spinTimeTotal;
+                    rotateAngle += (spinAngle * Math.PI / 180);
+                    drawWheel(wCtx, users, rotateAngle);
+                    requestAnimationFrame(animate);
+                };
+
+                const stopAnimation = async () => {
+                    let pairings = [];
+                    for(let i=0; i<users.length; i++) {
+                        let mom = users[i];
+                        let child = users[(i+1) % users.length]; // Closed Loop
+                        pairings.push({ mom, child });
+                    }
+                    await setDoc(doc(db, "game", "pairings"), { list: pairings });
+                    fireConfetti();
+                    showToast("✨ Magic Complete! Users are Paired.");
+                    getEl('spin-result').innerText = `Paired ${users.length} Elves!`;
+                };
+
+                animate();
+            };
+        }
+
+        function drawWheel(ctx, users, startAngle) {
+            const outsideRadius = 150;
+            const textRadius = 100;
+            const insideRadius = 30;
+            const w = 320, h = 320;
+            const cx = w/2, cy = h/2;
+            
+            ctx.clearRect(0,0,w,h);
+            
+            if (users.length === 0) return;
+
+            const arc = Math.PI * 2 / users.length;
+            const colors = ["#D62828", "#2D6A4F", "#F4D35E"]; // Red, Green, Gold
+
+            users.forEach((user, i) => {
+                const angle = startAngle + i * arc;
+                
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, outsideRadius, angle, angle + arc, false);
+                ctx.lineTo(cx, cy);
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "white";
+                ctx.stroke();
+
+                ctx.save();
+                ctx.shadowColor = "rgba(0,0,0,0.5)";
+                ctx.shadowBlur = 4;
+                ctx.fillStyle = "white";
+                ctx.font = 'bold 13px Nunito';
+                ctx.translate(cx + Math.cos(angle + arc / 2) * textRadius, 
+                              cy + Math.sin(angle + arc / 2) * textRadius);
+                ctx.rotate(angle + arc / 2 + Math.PI / 2); 
+                const text = user.length > 8 ? user.substring(0,8) + ".." : user;
+                ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
+                ctx.restore();
+            });
+            
+            // Inner gold ring
+            ctx.beginPath();
+            ctx.arc(cx, cy, insideRadius, 0, 2 * Math.PI, false);
+            ctx.fillStyle = "#F4D35E";
+            ctx.fill();
+            ctx.strokeStyle = "white";
+            ctx.stroke();
+        }
+
+        // --- USER PANEL ---
+        async function initUserPanel(username) {
+            getEl('display-username').innerText = username;
+
+            onSnapshot(doc(db, "game", "pairings"), (docSnap) => {
+                if (docSnap.exists()) {
+                    const allPairs = docSnap.data().list || [];
+                    const myPairAsMom = allPairs.find(p => p.mom === username);
+                    const myPairAsChild = allPairs.find(p => p.child === username);
+
+                    if (myPairAsMom && myPairAsChild) {
+                        myChild = myPairAsMom.child;
+                        myMom = myPairAsChild.mom;
+                        
+                        getEl('mom-waiting-msg').classList.add('hidden');
+                        getEl('mom-panel-content').classList.remove('hidden');
+                        getEl('child-panel-content').classList.remove('hidden');
+                        getEl('chat-section').classList.remove('hidden');
+
+                        updateUIBasedOnConfig();
+                        initTasks(username, myChild);
+                        initChats(username, myMom, myChild);
+                    } else {
+                        getEl('mom-waiting-msg').classList.remove('hidden');
+                        getEl('mom-panel-content').classList.add('hidden');
+                        getEl('child-panel-content').classList.add('hidden');
+                        getEl('chat-section').classList.add('hidden');
+                    }
+                }
+            });
+        }
 
         // --- TASK LOGIC ---
-        window.task = {
-            open: (mode) => {
-                if(!state.config.paired) return toast('Game not active');
-                const me = state.currentUser;
-                
-                if(state.taskUnsub) state.taskUnsub();
+        function initTasks(me, childName) {
+            // Mom View
+            const btnSend = getEl('btn-send-task');
+            onSnapshot(query(collection(db, "tasks"), where("fromMom", "==", me)), (snap) => {
+                const list = getEl('mom-review-list');
+                list.innerHTML = "";
+                let countToday = 0, total = 0;
+                const todayStr = new Date().toDateString();
 
-                if(mode === 'send') {
-                    const child = state.pairs[me];
-                    document.getElementById('task-target-name').innerText = child;
-                    nav.to('view-task-send');
+                snap.forEach(d => {
+                    const t = d.data();
+                    total++;
+                    if(new Date(t.timestamp.seconds*1000).toDateString() === todayStr) countToday++;
                     
-                    const q = query(collection(db, "tasks"), where("to", "==", child), orderBy("ts", "desc"));
-                    state.taskUnsub = onSnapshot(q, (snap) => {
-                         const container = document.getElementById('task-history-sent');
-                         container.innerHTML = "";
-                         snap.forEach(doc => {
-                             const t = doc.data();
-                             container.innerHTML += `<div class="glass-card" style="padding:15px; margin-bottom:10px;">
-                               ${t.txt} <span style="float:right; color:${t.status==='done'?'var(--secondary)':'var(--gold)'}">${t.status}</span>
-                             </div>`;
-                         });
-                    });
-
-                } else {
-                    nav.to('view-task-receive');
-                    const q = query(collection(db, "tasks"), where("to", "==", me), orderBy("ts", "desc"));
-                    state.taskUnsub = onSnapshot(q, (snap) => {
-                         const container = document.getElementById('task-list-receive');
-                         container.innerHTML = "";
-                         if(snap.empty) container.innerHTML = "<div class='glass-card text-center'>No active directives.</div>";
-                         snap.forEach(d => {
-                             const t = d.data();
-                             const did = d.id;
-                             container.innerHTML += `
-                                <div class="glass-card" style="border-left: 3px solid var(--primary);">
-                                    <p style="font-size:1.1rem; font-weight:600; margin-bottom:10px;">${t.txt}</p>
-                                    ${t.status === 'pending' 
-                                        ? `<button class="btn btn-primary" onclick="window.completeTask('${did}')" style="padding:10px; font-size:0.9rem;">Mark Done ✅</button>`
-                                        : `<div style="color:var(--secondary); font-weight:bold;">✨ Completed</div>`
-                                    }
-                                </div>`;
-                         });
-                    });
-                }
-            },
-            send: async () => {
-                const child = state.pairs[state.currentUser];
-                const txt = document.getElementById('task-input-text').value.trim();
-                if(!txt) return;
-                
-                await addDoc(collection(db, "tasks"), {
-                    from: state.currentUser,
-                    to: child,
-                    txt: txt,
-                    status: 'pending',
-                    ts: Date.now()
+                    let actionHtml = '';
+                    if (t.status === 'completed') {
+                        actionHtml = `<button class="btn btn-secondary" style="font-size:0.7rem; padding:5px 10px; width:auto; border-radius:12px;" onclick="window.approveTask('${d.id}')">Approve</button>`;
+                    }
+                    
+                    list.innerHTML += `
+                        <div style="border-bottom:1px solid #f0f0f0; padding:10px 0; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <div style="font-weight:700; color:#333;">${t.text}</div>
+                                <span class="status-badge status-${t.status}"><i class="fas fa-circle" style="font-size:6px;"></i> ${t.status}</span>
+                            </div>
+                            ${actionHtml}
+                        </div>
+                    `;
                 });
-                
-                document.getElementById('task-input-text').value = "";
-                toast('Directive Sent', '🚀');
-            }
-        };
-        document.getElementById('btn-task-send').onclick = task.send;
-        
-        window.completeTask = async (id) => {
-            await updateDoc(doc(db, "tasks", id), { status: 'done' });
-            toast('Great Work!', '🌟');
-        };
 
-        // --- INIT ---
-        window.nav = nav;
-        initSnow();
-        
-        document.getElementById('form-login').addEventListener('submit', auth.login);
-        document.getElementById('form-register').addEventListener('submit', auth.register);
+                if (countToday >= 1 || total >= 5) {
+                    btnSend.disabled = true;
+                    btnSend.style.background = "#ccc";
+                    btnSend.style.boxShadow = "none";
+                    btnSend.innerText = total >= 5 ? "All 5 Tasks Sent!" : "Daily Limit (1/1) Reached";
+                } else {
+                    btnSend.disabled = false;
+                    btnSend.style.background = ""; 
+                    btnSend.innerText = "Send Challenge";
+                }
+            });
 
-        if(state.currentUser) {
-            if(state.currentUser === 'ADMIN') setupAdmin();
-            else setupDashboard();
-        } else {
-            nav.to('view-login');
+            btnSend.onclick = async () => {
+                const text = getEl('task-input').value.trim();
+                if(!text) return;
+                await addDoc(collection(db, "tasks"), {
+                    fromMom: me, toChild: childName, text: text, status: 'pending', timestamp: serverTimestamp()
+                });
+                getEl('task-input').value = "";
+                showToast("Challenge Sent! 📨");
+            };
+
+            // Child View
+            onSnapshot(query(collection(db, "tasks"), where("toChild", "==", me)), (snap) => {
+                const history = getEl('child-task-history');
+                const currentText = getEl('current-task-text');
+                const taskAction = getEl('task-action-area');
+                const statusMsg = getEl('task-status-msg');
+                const btnComplete = getEl('btn-complete-task');
+
+                history.innerHTML = "";
+                const tasks = [];
+                snap.forEach(d => tasks.push({id: d.id, ...d.data()}));
+                tasks.sort((a,b) => b.timestamp - a.timestamp);
+
+                if (tasks.length > 0) {
+                    const activeTask = tasks[0]; 
+                    currentText.innerText = activeTask.text;
+
+                    if (activeTask.status === 'pending') {
+                        taskAction.classList.remove('hidden');
+                        statusMsg.innerText = "Waiting for you to complete...";
+                        btnComplete.onclick = async () => {
+                            await updateDoc(doc(db, "tasks", activeTask.id), { status: 'completed' });
+                            fireConfetti();
+                        };
+                    } else if (activeTask.status === 'completed') {
+                        taskAction.classList.add('hidden');
+                        statusMsg.innerText = "Marked done! Waiting for Mom's approval.";
+                    } else {
+                        taskAction.classList.add('hidden');
+                        statusMsg.innerText = "Approved! Great job, Elf! 🌟";
+                    }
+
+                    tasks.forEach(t => {
+                        history.innerHTML += `<li>${t.text} <span class="status-badge status-${t.status}" style="font-size:0.6rem; margin-left:5px;">${t.status}</span></li>`;
+                    });
+                } else {
+                    currentText.innerText = "No challenges yet. Relax by the fire! ☕";
+                    taskAction.classList.add('hidden');
+                }
+            });
         }
 
+        // Global Approve function
+        window.approveTask = async (id) => {
+            await updateDoc(doc(db, "tasks", id), { status: 'approved' });
+            fireConfetti();
+            showToast("Task Approved! ✅");
+        };
+
+        // --- CHAT LOGIC ---
+        function initChats(me, momName, childName) {
+            setupChatWindow(`${me}_${childName}`, 'chat-box-child', 'msg-input-child', 'btn-send-child', me);
+            setupChatWindow(`${momName}_${me}`, 'chat-box-mom', 'msg-input-mom', 'btn-send-mom', me);
+        }
+
+        function setupChatWindow(docId, boxId, inputId, btnId, sender) {
+            const box = getEl(boxId);
+            
+            onSnapshot(collection(db, "chats", docId, "messages"), (snap) => {
+                box.innerHTML = "";
+                const msgs = [];
+                snap.forEach(d => msgs.push(d.data()));
+                msgs.sort((a,b) => a.timestamp - b.timestamp);
+                
+                msgs.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = `message ${m.sender === sender ? 'msg-sent' : 'msg-received'}`;
+                    div.innerHTML = `${m.text}<div class="msg-meta">${new Date(m.timestamp?.seconds*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>`;
+                    box.appendChild(div);
+                });
+                box.scrollTop = box.scrollHeight;
+            }, (error) => {
+                // Fail gracefully
+            });
+
+            getEl(btnId).onclick = async () => {
+                const txt = getEl(inputId).value.trim();
+                if (!txt) return;
+                try {
+                    await addDoc(collection(db, "chats", docId, "messages"), {
+                        text: txt, sender: sender, timestamp: serverTimestamp()
+                    });
+                    getEl(inputId).value = "";
+                } catch(e) {
+                    showToast("Error sending message (Check permissions)");
+                }
+            };
+        }
     </script>
 </body>
 </html>
