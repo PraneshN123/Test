@@ -7,35 +7,104 @@
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             background-color: #f4f4f4;
             font-family: sans-serif;
+            text-align: center;
         }
-        .pay-btn {
-            background-color: #000;
-            color: #fff;
-            padding: 15px 30px;
+
+        /* Container to hold the buttons */
+        .action-container {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        /* Common Button Styles */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px 0;
             font-size: 18px;
             border: none;
             border-radius: 50px;
             text-decoration: none;
             font-weight: bold;
+            text-align: center;
+            cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.1s ease;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            -webkit-tap-highlight-color: transparent;
         }
-        .pay-btn:active {
+
+        /* Style 1: The Black Pay Button */
+        .pay-btn {
+            background-color: #000;
+            color: #fff;
+        }
+        
+        /* Style 2: The Green Confirmation Button (Hidden initially) */
+        .confirm-btn {
+            background-color: #28a745; /* Green */
+            color: #fff;
+            display: none; /* Hidden by default */
+        }
+
+        /* Animation for button press */
+        .btn:active {
             transform: scale(0.98);
+        }
+
+        .helper-text {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <a class="pay-btn" href="upi://pay?pa=praneshkriss@oksbi&pn=Pranesh&am=10.00&cu=INR">
-        Pay ₹10.00 with GPay
-    </a>
+    <div class="action-container">
+        
+        <a id="payButton" 
+           class="btn pay-btn" 
+           href="upi://pay?pa=praneshkriss@oksbi&pn=Pranesh&am=10.00&cu=INR" 
+           target="_blank"
+           onclick="showConfirmation()">
+            Pay ₹10.00 with GPay
+        </a>
+
+        <a id="invoiceButton" 
+           class="btn confirm-btn" 
+           href="https://app.zohocreator.com/YOUR_USERNAME/YOUR_APP/form-perma/Invoice_Form?Payment_Status=Paid&Amount=10"
+           target="_blank">
+            ✅ I Have Paid: Get Invoice
+        </a>
+
+        <p id="helperText" class="helper-text">
+            Click the green button above once the payment is successful.
+        </p>
+
+    </div>
+
+    <script>
+        function showConfirmation() {
+            // 1. Wait 2 seconds (simulating the user leaving to GPay)
+            setTimeout(function() {
+                // 2. Hide the Pay Button
+                document.getElementById('payButton').style.display = 'none';
+
+                // 3. Show the Invoice Button & Text
+                document.getElementById('invoiceButton').style.display = 'block';
+                document.getElementById('helperText').style.display = 'block';
+            }, 2000);
+        }
+    </script>
 
 </body>
 </html>
