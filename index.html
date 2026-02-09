@@ -2,215 +2,220 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmashFit Payment</title>
-    <style><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Our Story ❤️</title>
+    <title>For You ❤️</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Urbanist:wght@200;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Pinyon+Script&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <style>
-        /* --- CORE VARIABLES & RESET --- */
         :root {
-            --deep-red: #1a0508;
-            --rose: #b91c38;
-            --blush: #ff8fa3;
+            --bg-color: #0a0a0c;
             --gold: #d4af37;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text: #fff0f3;
+            --gold-light: #fbeea8;
+            --red-velvet: #3a000b;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #e0e0e0;
+            --font-head: 'Cinzel', serif;
+            --font-body: 'Montserrat', sans-serif;
+            --font-script: 'Pinyon Script', cursive;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
         body {
-            background-color: var(--deep-red);
-            font-family: 'Urbanist', sans-serif;
-            color: var(--text);
+            background: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-body);
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            position: fixed; /* Prevent scroll bounce */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* --- BACKGROUND ENGINE --- */
-        #canvas-bg {
-            position: absolute;
+        /* --- BACKGROUND (STARS) --- */
+        #star-canvas {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 0;
-            opacity: 0.6;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
         }
 
-        .vignette {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 40%, #000 100%);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* --- UI LAYER --- */
+        /* --- CONTAINER & SCREENS --- */
         #app {
             position: relative;
             z-index: 10;
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            perspective: 1000px;
         }
 
-        /* --- SCREENS TRANSITION SYSTEM --- */
         .screen {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1s ease, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-            transform: scale(1.05);
-            padding: 20px;
+            transition: opacity 1s ease, filter 1s ease;
+            filter: blur(10px);
         }
 
         .screen.active {
             opacity: 1;
             pointer-events: all;
-            transform: scale(1);
+            filter: blur(0);
         }
 
         /* --- TYPOGRAPHY --- */
-        h1.romantic {
-            font-family: 'Great Vibes', cursive;
-            font-size: 3.5rem;
-            color: var(--blush);
-            text-shadow: 0 0 20px rgba(255, 77, 109, 0.3);
-            margin-bottom: 10px;
-            line-height: 1.2;
-        }
-
-        h2.cinematic {
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            letter-spacing: 4px;
+        h1 {
+            font-family: var(--font-head);
+            font-size: 2.5rem;
             color: var(--gold);
-            text-transform: uppercase;
-            margin-bottom: 30px;
-        }
-
-        p.body-text {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            font-weight: 200;
-            max-width: 85%;
             text-align: center;
-        }
-
-        /* --- ELEMENTS --- */
-        .btn {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            padding: 15px 40px;
-            border-radius: 30px;
-            color: white;
-            font-family: 'Cinzel', serif;
-            letter-spacing: 2px;
-            cursor: pointer;
-            margin-top: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .btn:hover::after { left: 100%; }
-        .btn:active { transform: scale(0.95); }
-
-        /* --- SCREEN 1: INTRO --- */
-        .intro-heart {
-            font-size: 5rem;
-            animation: heartbeat 2s infinite ease-in-out;
+            letter-spacing: 4px;
             margin-bottom: 20px;
-            filter: drop-shadow(0 0 30px var(--rose));
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
         }
 
-        /* --- SCREEN 2: STORY (INSTAGRAM STYLE) --- */
-        .story-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            background: black;
-        }
-        
-        .story-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.5;
-            transition: transform 10s ease; /* Zoom effect */
-        }
-        
-        .story-overlay {
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 100%;
-            padding: 40px 20px 60px;
-            background: linear-gradient(to top, black, transparent);
+        .subtitle {
+            font-family: var(--font-script);
+            font-size: 2rem;
+            color: var(--text-main);
+            opacity: 0.8;
+            margin-bottom: 40px;
         }
 
-        .story-bars {
-            position: absolute;
-            top: 10px; left: 10px; right: 10px;
+        /* --- COMPONENT: WAX SEAL BUTTON --- */
+        .seal-btn {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #8a1c1c, #520505);
+            border-radius: 50%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.5);
             display: flex;
-            gap: 5px;
-            z-index: 20;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            border: 4px solid #630808;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .bar-bg {
-            flex: 1;
-            height: 3px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 2px;
-            overflow: hidden;
+        .seal-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(138, 28, 28, 0.6);
         }
 
-        .bar-fill {
-            height: 100%;
-            width: 0%;
-            background: white;
-            border-radius: 2px;
+        .seal-btn svg {
+            fill: var(--gold);
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
         }
 
-        /* --- SCREEN 3: 3D LETTER --- */
-        .letter-scene {
-            perspective: 1200px;
-            width: 320px;
-            height: 220px;
+        /* --- COMPONENT: TIMELINE CARDS (CSS ONLY) --- */
+        .timeline-container {
+            width: 90%;
+            max-width: 500px;
+            height: 60vh;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .memory-card {
+            background: rgba(20, 20, 25, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 4px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateY(10deg);
+            width: 100%;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        .memory-card.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) rotateY(0deg) scale(1);
+            z-index: 5;
+        }
+
+        .memory-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--gold);
+            display: inline-block;
+        }
+
+        .memory-date {
+            font-family: var(--font-head);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: var(--gold-light);
+            margin-bottom: 10px;
+            display: block;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 10px;
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .memory-text {
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .nav-btn {
+            margin-top: 30px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 30px;
+            font-family: var(--font-head);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+        }
+
+        .nav-btn:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* --- COMPONENT: 3D LETTER --- */
+        .letter-stage {
+            perspective: 2000px;
+            width: 300px;
+            height: 200px;
             cursor: pointer;
         }
 
@@ -219,436 +224,440 @@
             height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 1s ease;
         }
 
-        .envelope.open {
-            transform: rotateX(180deg);
-            opacity: 0; 
-            pointer-events: none; /* Hide envelope after open to show paper clearly */
-        }
-
-        .env-body {
+        .envelope-body {
             position: absolute;
-            width: 100%; height: 100%;
-            background: #e8d0d5;
-            border-radius: 5px;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            backface-visibility: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            z-index: 2;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            z-index: 10;
         }
 
-        .env-flap {
+        .envelope-flap {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 50%;
-            background: #d4b8be;
-            clip-path: polygon(0 0, 50% 100%, 100% 0);
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 120px solid #252525;
             transform-origin: top;
-            transition: transform 0.6s 0.2s;
-            z-index: 3;
+            transition: transform 0.6s 0.2s ease;
+            z-index: 20;
         }
 
-        .letter-paper {
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .paper {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
-            width: 90vw;
-            max-width: 350px;
-            background: #fffcf5;
-            color: #2a2a2a;
-            padding: 30px;
-            border-radius: 2px;
-            opacity: 0;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            transition: all 1s ease;
+            top: 10px;
+            left: 10px;
+            width: calc(100% - 20px);
+            height: calc(100% - 20px);
+            background: #f4f1ea;
+            color: #1a1a1a;
+            padding: 20px;
+            transform: translateY(0);
+            transition: transform 1s 0.6s ease;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            font-family: var(--font-script);
+            font-size: 1.2rem;
+            text-align: center;
         }
 
-        .letter-paper.visible {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
+        .envelope.open .paper {
+            transform: translateY(-120px);
+            z-index: 25;
+            height: 300px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .handwriting {
-            font-family: 'Great Vibes', cursive;
-            font-size: 1.5rem;
-            line-height: 1.6;
+        /* --- COMPONENT: CSS 3D RING BOX --- */
+        .box-stage {
+            perspective: 800px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 40px auto;
         }
 
-        /* --- SCREEN 4: THE PROPOSAL --- */
-        .ring-stage {
-            perspective: 1000px;
-            margin-bottom: 40px;
-        }
-
-        .ring-box {
-            width: 120px;
-            height: 120px;
-            background: #4a0e16;
-            border-radius: 10px;
+        .box {
+            width: 100%;
+            height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-            transition: transform 1s;
+            transform: rotateX(20deg) rotateY(0deg);
         }
 
-        .ring-box-top {
+        .box-bottom {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 40px;
-            background: #61131d;
-            border-radius: 10px 10px 0 0;
-            transform-origin: top;
-            transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            width: 100%;
+            height: 50px;
+            bottom: 0;
+            background: #111;
+            transform-style: preserve-3d;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+        
+        .box-lid {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            top: 10px;
+            background: #1a1a1a;
+            transform-origin: back;
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotateX(0deg);
+            z-index: 10;
             border-bottom: 2px solid var(--gold);
         }
 
-        .ring-box.open .ring-box-top {
-            transform: rotateX(-100deg);
+        .box.open .box-lid {
+            transform: rotateX(-110deg);
+        }
+
+        /* The Pure CSS Ring */
+        .ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gold);
+            border-radius: 50%;
+            transform: translate(-50%, -20%) rotateX(80deg) scale(0);
+            box-shadow: 0 0 10px var(--gold);
+            transition: transform 1s 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
         }
 
         .diamond {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            font-size: 3rem;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
-            transition: transform 1s 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 2px;
+            box-shadow: 0 0 15px 5px rgba(255,255,255,0.8), 0 0 30px 10px var(--gold-light);
+            animation: sparkle 2s infinite;
         }
 
-        .ring-box.open .diamond {
-            transform: translate(-50%, -80%) scale(1);
-        }
-
-        .proposal-options {
-            display: flex;
-            gap: 20px;
-            margin-top: 30px;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .btn-yes { background: var(--rose); border-color: var(--rose); box-shadow: 0 0 25px rgba(185, 28, 56, 0.5); }
-        .btn-always { background: var(--gold); border-color: var(--gold); color: #1a0508; box-shadow: 0 0 25px rgba(212, 175, 55, 0.5); }
-
-        /* --- AUDIO CONTROLS --- */
-        .audio-toggle {
-            position: absolute;
-            top: 20px; right: 20px;
-            z-index: 100;
-            font-size: 1.5rem;
-            opacity: 0.5;
-            cursor: pointer;
+        .box.open .ring {
+            opacity: 1;
+            transform: translate(-50%, -120%) rotateX(0deg) scale(1);
         }
 
         /* --- ANIMATIONS --- */
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.2); box-shadow: 0 0 25px 10px rgba(255,255,255,1); }
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* --- MOBILE TWEAKS --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .subtitle { font-size: 1.4rem; }
+            .memory-text { font-size: 1rem; }
+            .envelope.open .paper { height: 280px; width: 300px; left: -25px; } /* Center paper fix for mobile */
+        }
     </style>
 </head>
 <body>
 
-    <audio id="bg-music" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_51030e4635.mp3?filename=romantic-moment-13936.mp3" type="audio/mpeg">
-    </audio>
-    <div class="audio-toggle" id="audio-btn">🔇</div>
+    <canvas id="star-canvas"></canvas>
 
-    <canvas id="canvas-bg"></canvas>
-    <div class="vignette"></div>
+    <audio id="bg-music" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-beautiful-dream-493.mp3" type="audio/mpeg">
+    </audio>
 
     <div id="app">
-        
-        <section id="s-intro" class="screen active" onclick="startExperience()">
-            <div class="intro-heart">❤️</div>
-            <h2 class="cinematic">For My Love</h2>
-            <p class="body-text" style="opacity: 0.7;">(Tap to Begin)</p>
+
+        <section id="s1" class="screen active">
+            <h1 style="margin-bottom: 50px;">A Story Written in the Stars</h1>
+            
+            <div class="seal-btn" onclick="nextScreen('s2')">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </div>
+            
+            <p style="margin-top: 20px; opacity: 0.6; font-size: 0.8rem; letter-spacing: 2px;">TAP TO BEGIN</p>
         </section>
 
-        <section id="s-stories" class="screen" style="padding: 0;">
-            <div class="story-container" onclick="nextStory()">
-                <div id="story-bg" class="story-image" style="background: linear-gradient(45deg, #1a0508, #2b0c14);"></div>
-                
-                <div class="story-bars" id="story-bars"></div>
+        <section id="s2" class="screen">
+            <h1 style="font-size: 1.5rem; opacity: 0.8;">Moments in Time</h1>
+            
+            <div class="timeline-container" id="card-container">
+                </div>
 
-                <div class="story-overlay">
-                    <h1 class="romantic" id="story-title" style="font-size: 2.5rem;"></h1>
-                    <p class="body-text" id="story-text" style="text-align: left;"></p>
+            <button class="nav-btn" id="next-story-btn" onclick="advanceStory()">Next Memory</button>
+        </section>
+
+        <section id="s3" class="screen">
+            <div class="letter-stage" onclick="openEnvelope()">
+                <div class="envelope" id="env">
+                    <div class="envelope-body"></div>
+                    <div class="envelope-flap"></div>
+                    <div class="paper">
+                        <p id="typewriter-text"></p>
+                    </div>
                 </div>
             </div>
+            <button class="nav-btn" id="to-prop-btn" style="opacity: 0; pointer-events: none; margin-top: 80px;" onclick="nextScreen('s4')">Continue</button>
         </section>
 
-        <section id="s-letter" class="screen">
-            <h2 class="cinematic" style="margin-bottom: 50px;">A Note For You...</h2>
+        <section id="s4" class="screen">
+            <h1 id="q-text" style="opacity: 0;">Will you marry me?</h1>
             
-            <div class="letter-scene" onclick="openLetter()">
-                <div class="envelope" id="envelope">
-                    <div class="env-flap"></div>
-                    <div class="env-body">
-                        <span style="font-family: 'Great Vibes'; font-size: 2rem; color: #5a3a41;">Open Me</span>
+            <div class="box-stage">
+                <div class="box" id="ring-box">
+                    <div class="box-bottom"></div>
+                    <div class="box-lid"></div>
+                    <div class="ring">
+                        <div class="diamond"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="letter-paper" id="letter-paper">
-                <p class="handwriting">My Dearest,</p>
-                <p class="handwriting" style="margin-top: 15px;">
-                    This past year has been a journey of magic. From our first laugh to our quietest moments, you have become my home.
-                </p>
-                <p class="handwriting" style="margin-top: 15px;">
-                    I don't just love you for who you are, but for who I am when I am with you.
-                </p>
-                <div style="text-align: center; margin-top: 30px;">
-                    <button class="btn" style="color: #2a2a2a; border-color: #2a2a2a;" onclick="goToProposal()">Next</button>
-                </div>
+            <div id="answers" style="opacity: 0; display: flex; gap: 20px;">
+                <button class="nav-btn" style="background: var(--gold); color: #000;" onclick="finalSuccess()">Yes</button>
+                <button class="nav-btn" onclick="finalSuccess()">Absolutely Yes</button>
             </div>
         </section>
 
-        <section id="s-proposal" class="screen">
-            <div class="ring-stage">
-                <div class="ring-box" id="ring-box">
-                    <div class="ring-box-top"></div>
-                    <div class="diamond">💍</div>
-                </div>
-            </div>
-            
-            <h1 class="romantic" id="prop-text" style="opacity: 0; transform: translateY(20px);">Will You Be Mine?</h1>
-            <h2 class="cinematic" id="prop-sub" style="font-size: 0.8rem; opacity: 0; transform: translateY(20px);">Forever & Always</h2>
-
-            <div class="proposal-options" id="prop-opts">
-                <button class="btn btn-yes" onclick="sheSaidYes()">YES ❤️</button>
-                <button class="btn btn-always" onclick="sheSaidYes()">ALWAYS 💫</button>
-            </div>
-        </section>
-
-        <section id="s-success" class="screen">
-            <h1 class="romantic" style="font-size: 4rem;">She Said Yes!</h1>
-            <p class="body-text">You just made me the happiest person in the universe.</p>
+        <section id="s5" class="screen">
+            <h1 style="font-size: 3rem; margin-bottom: 10px;">Forever & Always</h1>
+            <p class="subtitle">The universe just aligned.</p>
         </section>
 
     </div>
 
     <script>
-        // --- DATA: MEMORIES ---
-        // EDIT THIS: Add your own texts.
-        const stories = [
-            { title: "One Year Ago", text: "We started as strangers with a simple hello. I had no idea you would become my everything." },
-            { title: "The Laughter", text: "Every smile you gave me lit up my darkest days. You are my sunshine." },
-            { title: "The Growth", text: "Through the fights and the hugs, we learned, we grew, and we chose each other." },
-            { title: "Today", text: "And now, looking back at 365 days, I only have one question left..." }
+        /* --- 1. DATA (EDIT THIS) --- */
+        const TIMELINE_DATA = [
+            {
+                icon: "★",
+                date: "The Day We Met",
+                text: "I didn't know it then, but my whole life was about to change. The stars aligned the moment I saw you."
+            },
+            {
+                icon: "✈", // Unicode plane
+                date: "First Adventure",
+                text: "Traveling the world is beautiful, but the best view was always sitting right next to me."
+            },
+            {
+                icon: "❤",
+                date: "Falling in Love",
+                text: "It wasn't a fall, it was a flight. You make the ordinary feel like magic every single day."
+            }
         ];
 
-        // --- STATE MANAGEMENT ---
-        let currentStory = 0;
-        let storyInterval;
+        const LETTER_CONTENT = "My dearest,\n\nWe have created so many memories, but I believe the best one is yet to come.\n\nI want to wake up next to you every morning and fall asleep next to you every night.\n\nLet's make this forever.";
+
+        /* --- 2. SETUP --- */
+        let currentCard = 0;
+        let isAudioPlaying = false;
         const audio = document.getElementById('bg-music');
-        let audioStarted = false;
 
-        // --- AUDIO HANDLER ---
-        document.getElementById('audio-btn').addEventListener('click', () => {
-            if(audio.paused) {
-                audio.play();
-                document.getElementById('audio-btn').textContent = "🔊";
+        /* --- 3. NAVIGATION --- */
+        function nextScreen(id) {
+            // Audio trigger on first interaction
+            if(!isAudioPlaying) {
+                audio.volume = 0.4;
+                audio.play().catch(e => console.log("Audio needs interaction"));
+                isAudioPlaying = true;
+            }
+
+            const current = document.querySelector('.screen.active');
+            current.classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById(id).classList.add('active');
+                if(id === 's2') initCards();
+                if(id === 's4') startProposal();
+            }, 1000);
+        }
+
+        /* --- 4. TIMELINE LOGIC --- */
+        function initCards() {
+            const container = document.getElementById('card-container');
+            container.innerHTML = '';
+            TIMELINE_DATA.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = `memory-card ${index === 0 ? 'active' : ''}`;
+                card.id = `card-${index}`;
+                card.innerHTML = `
+                    <div class="memory-icon">${item.icon}</div>
+                    <span class="memory-date">${item.date}</span>
+                    <p class="memory-text">${item.text}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function advanceStory() {
+            const oldCard = document.getElementById(`card-${currentCard}`);
+            
+            // Animation out
+            gsap.to(oldCard, { opacity: 0, rotationY: -20, x: -50, duration: 0.5 });
+            
+            currentCard++;
+            
+            if(currentCard < TIMELINE_DATA.length) {
+                const newCard = document.getElementById(`card-${currentCard}`);
+                // Animation in
+                gsap.fromTo(newCard, 
+                    { opacity: 0, rotationY: 20, x: 50, scale: 0.9 },
+                    { opacity: 1, rotationY: 0, x: -50, y: -50, scale: 1, duration: 0.8, delay: 0.2, xPercent: 50, yPercent: 50 } // CSS centering correction
+                );
+                newCard.classList.add('active');
             } else {
-                audio.pause();
-                document.getElementById('audio-btn').textContent = "🔇";
-            }
-        });
-
-        function playAudio() {
-            if(!audioStarted) {
-                audio.volume = 0.5;
-                audio.play().catch(e => console.log("Interaction needed"));
-                document.getElementById('audio-btn').textContent = "🔊";
-                audioStarted = true;
+                nextScreen('s3');
             }
         }
 
-        // --- NAVIGATION ---
-        function switchScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        // --- SEQUENCE: START ---
-        function startExperience() {
-            playAudio();
-            switchScreen('s-stories');
-            initStories();
-        }
-
-        // --- LOGIC: STORIES ---
-        function initStories() {
-            const barsContainer = document.getElementById('story-bars');
-            barsContainer.innerHTML = '';
-            stories.forEach((_, i) => {
-                const bg = document.createElement('div');
-                bg.className = 'bar-bg';
-                const fill = document.createElement('div');
-                fill.className = 'bar-fill';
-                fill.id = `bar-${i}`;
-                bg.appendChild(fill);
-                barsContainer.appendChild(bg);
-            });
-            showStory(0);
-        }
-
-        function showStory(index) {
-            if (index >= stories.length) {
-                switchScreen('s-letter');
-                return;
-            }
-
-            // Reset bars
-            stories.forEach((_, i) => {
-                document.getElementById(`bar-${i}`).style.width = i < index ? '100%' : '0%';
-                document.getElementById(`bar-${i}`).style.transition = 'none';
-            });
-
-            // Set Content
-            document.getElementById('story-title').innerText = stories[index].title;
-            document.getElementById('story-text').innerText = stories[index].text;
+        /* --- 5. LETTER LOGIC --- */
+        let letterOpened = false;
+        function openEnvelope() {
+            if(letterOpened) return;
+            letterOpened = true;
+            document.getElementById('env').classList.add('open');
             
-            // Animate Current Bar
-            const currentBar = document.getElementById(`bar-${index}`);
-            // Force reflow
-            void currentBar.offsetWidth; 
-            currentBar.style.transition = 'width 5s linear';
-            currentBar.style.width = '100%';
-
-            // Set Timeout for next
-            clearTimeout(storyInterval);
-            storyInterval = setTimeout(() => nextStory(), 5000);
-            currentStory = index;
+            setTimeout(() => {
+                typeText(LETTER_CONTENT, 'typewriter-text');
+            }, 1000);
         }
 
-        function nextStory() {
-            showStory(currentStory + 1);
-        }
-
-        // --- LOGIC: LETTER ---
-        function openLetter() {
-            const env = document.getElementById('envelope');
-            if(!env.classList.contains('open')) {
-                env.classList.add('open');
-                setTimeout(() => {
-                    document.getElementById('letter-paper').classList.add('visible');
-                }, 800);
+        function typeText(text, id) {
+            const el = document.getElementById(id);
+            let i = 0;
+            el.innerHTML = "";
+            function type() {
+                if(i < text.length) {
+                    el.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+                    i++;
+                    setTimeout(type, 30);
+                } else {
+                    gsap.to('#to-prop-btn', { opacity: 1, pointerEvents: 'all', duration: 1 });
+                }
             }
+            type();
         }
 
-        function goToProposal() {
-            switchScreen('s-proposal');
-            setTimeout(revealRing, 1000);
+        /* --- 6. PROPOSAL LOGIC --- */
+        function startProposal() {
+            setTimeout(() => {
+                gsap.to('#q-text', { opacity: 1, duration: 1.5 });
+            }, 500);
+
+            setTimeout(() => {
+                document.getElementById('ring-box').classList.add('open');
+            }, 1500);
+
+            setTimeout(() => {
+                gsap.to('#answers', { opacity: 1, duration: 1 });
+            }, 3000);
         }
 
-        // --- LOGIC: PROPOSAL ---
-        function revealRing() {
-            document.getElementById('ring-box').classList.add('open');
-            
-            // GSAP Sequence
-            gsap.to("#prop-text", {opacity: 1, y: 0, duration: 1, delay: 0.5});
-            gsap.to("#prop-sub", {opacity: 0.8, y: 0, duration: 1, delay: 0.8});
-            gsap.to("#prop-opts", {opacity: 1, y: 0, duration: 1, delay: 1.5});
-            
-            // Vibration pulse
-            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        function finalSuccess() {
+            nextScreen('s5');
+            launchFireflies();
+            audio.volume = 1.0;
         }
 
-        function sheSaidYes() {
-            launchFireworks();
-            switchScreen('s-success');
-            audio.volume = 1.0; // Swell music
-            if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 500]);
-        }
-
-
-        // --- VISUALS: CANVAS PARTICLE ENGINE ---
-        const canvas = document.getElementById('canvas-bg');
+        /* --- 7. CANVAS BACKGROUND (STARS) --- */
+        const canvas = document.getElementById('star-canvas');
         const ctx = canvas.getContext('2d');
-        let width, height;
-        let particles = [];
+        let width, height, stars = [];
 
         function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
         }
         window.addEventListener('resize', resize);
         resize();
 
-        class Particle {
-            constructor(isFirework = false) {
-                this.isFirework = isFirework;
-                this.x = isFirework ? width / 2 : Math.random() * width;
-                this.y = isFirework ? height / 2 : Math.random() * height;
-                this.size = Math.random() * 3;
-                this.speedX = Math.random() * 2 - 1;
-                this.speedY = Math.random() * 2 - 1;
-                this.life = 1; // Alpha
-                this.decay = Math.random() * 0.02 + 0.005;
-                this.color = `hsl(${Math.random() * 60 + 330}, 100%, 70%)`; // Red/Pink hues
-                
-                if(isFirework) {
-                    this.speedX = (Math.random() - 0.5) * 15;
-                    this.speedY = (Math.random() - 0.5) * 15;
-                    this.size = Math.random() * 4 + 2;
-                    this.color = `hsl(${Math.random() * 360}, 100%, 50%)`; // Gold/Colorful
-                }
+        class Star {
+            constructor() {
+                this.reset();
             }
-
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2;
+                this.speed = Math.random() * 0.5;
+                this.alpha = Math.random();
+                this.change = Math.random() * 0.02;
+            }
             update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                
-                if (this.isFirework) {
-                    this.life -= this.decay;
-                    this.speedY += 0.1; // Gravity
-                } else {
-                    // Ambient flow
-                    if(this.x > width) this.x = 0;
-                    if(this.x < 0) this.x = width;
-                    if(this.y > height) this.y = 0;
-                    if(this.y < 0) this.y = height;
-                }
+                this.alpha += this.change;
+                if(this.alpha > 1 || this.alpha < 0) this.change = -this.change;
+                this.y -= this.speed;
+                if(this.y < 0) this.reset();
             }
-
             draw() {
-                ctx.globalAlpha = this.life;
-                ctx.fillStyle = this.color;
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.globalAlpha = 1;
             }
         }
 
-        // Populate Ambient
-        for(let i=0; i<60; i++) particles.push(new Particle());
+        // Init Stars
+        for(let i=0; i<150; i++) stars.push(new Star());
 
-        function launchFireworks() {
-            for(let i=0; i<100; i++) particles.push(new Particle(true));
+        // Fireflies for success
+        let fireflies = [];
+        function launchFireflies() {
+            for(let i=0; i<50; i++) {
+                fireflies.push({
+                    x: width/2, y: height/2,
+                    vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
+                    life: 1, color: `hsl(${Math.random()*60 + 30}, 100%, 50%)`
+                });
+            }
         }
 
         function animate() {
             ctx.clearRect(0, 0, width, height);
             
-            // Subtle glow background
-            // ctx.fillStyle = 'rgba(20, 5, 10, 0.2)';
-            // ctx.fillRect(0,0,width,height);
+            // Draw Stars
+            stars.forEach(star => { star.update(); star.draw(); });
 
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.update();
-                p.draw();
-                if (p.isFirework && p.life <= 0) {
-                    particles.splice(i, 1);
+            // Draw Fireflies (Explosion)
+            if(fireflies.length > 0) {
+                for(let i=fireflies.length-1; i>=0; i--) {
+                    let f = fireflies[i];
+                    f.x += f.vx;
+                    f.y += f.vy;
+                    f.life -= 0.01;
+                    ctx.fillStyle = f.color;
+                    ctx.globalAlpha = f.life;
+                    ctx.beginPath();
+                    ctx.arc(f.x, f.y, 3, 0, Math.PI*2);
+                    ctx.fill();
+                    if(f.life <= 0) fireflies.splice(i, 1);
                 }
+                ctx.globalAlpha = 1;
             }
+
             requestAnimationFrame(animate);
         }
         animate();
@@ -656,107 +665,3 @@
     </script>
 </body>
 </html>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
-            font-family: sans-serif;
-            text-align: center;
-        }
-
-        /* Container to hold the buttons */
-        .action-container {
-            width: 100%;
-            max-width: 300px;
-        }
-
-        /* Common Button Styles */
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 15px 0;
-            font-size: 18px;
-            border: none;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            margin-bottom: 15px;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Style 1: The Black Pay Button */
-        .pay-btn {
-            background-color: #000;
-            color: #fff;
-        }
-        
-        /* Style 2: The Green Confirmation Button (Hidden initially) */
-        .confirm-btn {
-            background-color: #28a745; /* Green */
-            color: #fff;
-            display: none; /* Hidden by default */
-        }
-
-        /* Animation for button press */
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .helper-text {
-            color: #666;
-            font-size: 14px;
-            margin-top: 10px;
-            display: none;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="action-container">
-        
-        <a id="payButton" 
-           class="btn pay-btn" 
-           href="upi://pay?pa=praneshkriss@oksbi&pn=Pranesh&am=10.00&cu=INR" 
-           target="_blank"
-           onclick="showConfirmation()">
-            Pay ₹10.00 with GPay
-        </a>
-
-        <a id="invoiceButton" 
-           class="btn confirm-btn" 
-           href="https://app.zohocreator.com/YOUR_USERNAME/YOUR_APP/form-perma/Invoice_Form?Payment_Status=Paid&Amount=10"
-           target="_blank">
-            ✅ I Have Paid: Get Invoice
-        </a>
-
-        <p id="helperText" class="helper-text">
-            Click the green button above once the payment is successful.
-        </p>
-
-    </div>
-
-    <script>
-        function showConfirmation() {
-            // 1. Wait 2 seconds (simulating the user leaving to GPay)
-            setTimeout(function() {
-                // 2. Hide the Pay Button
-                document.getElementById('payButton').style.display = 'none';
-
-                // 3. Show the Invoice Button & Text
-                document.getElementById('invoiceButton').style.display = 'block';
-                document.getElementById('helperText').style.display = 'block';
-            }, 2000);
-        }
-    </script>
-
-</body>
-</html>
-
