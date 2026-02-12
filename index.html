@@ -2,775 +2,597 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Promise Quest: The Heart Universe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CENA Digital Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
     <style>
-        /* --- CSS STYLING --- */
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;500&display=swap');
-
         :root {
-            --primary: #ff4d88;
-            --secondary: #8b5cf6;
-            --dark: #0f172a;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --sidebar-width: 260px;
         }
 
-        /* RESET & MOBILE SCROLL LOCK */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: none; /* Critical: Prevents page scrolling on mobile */
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
 
-        body {
-            background-color: var(--dark);
-            overflow: hidden;
-            font-family: 'Montserrat', sans-serif;
-            color: white;
-            width: 100vw;
-            height: 100vh;
-            position: fixed;
-            cursor: none; /* Hide default cursor generally */
-        }
+        /* --- Components --- */
+        .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { border: 1px solid var(--border); background: white; color: var(--text-main); }
+        .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.85rem; }
 
-        /* --- CUSTOM CURSOR (Visual Only) --- */
-        #custom-cursor {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 40px;
-            height: 40px;
-            pointer-events: none; /* Let clicks pass through */
-            z-index: 100000;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: screen;
-            will-change: transform, left, top;
-        }
+        .badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-blue { background: #dbeafe; color: #1e40af; }
 
-        #custom-cursor svg {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 0 10px var(--primary));
-            animation: pulse 1.5s infinite ease-in-out;
-        }
+        .card { background: var(--bg-card); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 1.5rem; border: 1px solid var(--border); margin-bottom: 1.5rem; }
+        
+        /* --- Layout --- */
+        #app { display: flex; width: 100%; height: 100%; }
+        
+        /* Sidebar */
+        .sidebar { width: var(--sidebar-width); background: white; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+        .brand { padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .brand h2 { font-size: 1.25rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+        
+        .nav-links { list-style: none; padding: 1rem; flex: 1; }
+        .nav-item { margin-bottom: 0.25rem; }
+        .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text-light); text-decoration: none; border-radius: 6px; cursor: pointer; }
+        .nav-link:hover, .nav-link.active { background: #eff6ff; color: var(--primary); }
+        .nav-link .material-icons-round { font-size: 1.25rem; }
 
-        /* --- UI LAYERING --- */
-        #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* Default: click through to canvas */
-            z-index: 10;
-        }
+        .user-profile { padding: 1rem; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem; }
+        .avatar { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .user-info h4 { font-size: 0.9rem; }
+        .user-info p { font-size: 0.75rem; color: var(--text-light); }
 
-        .screen {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle at center, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.95));
-            transition: opacity 0.5s ease;
-            pointer-events: auto; /* Buttons on screens must be clickable */
-        }
+        /* Main Content */
+        .main-content { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; }
+        
+        /* Views */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .page-title { font-size: 1.5rem; font-weight: 700; }
 
-        .hidden {
-            opacity: 0;
-            pointer-events: none !important;
-        }
+        /* Dashboard Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { display: flex; align-items: center; gap: 1rem; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .stat-icon.blue { background: #dbeafe; color: var(--primary); }
+        .stat-icon.green { background: #d1fae5; color: var(--success); }
+        .stat-icon.orange { background: #fef3c7; color: var(--warning); }
 
-        /* TYPOGRAPHY */
-        h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 2.8rem;
-            background: linear-gradient(to right, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255, 77, 136, 0.5);
-            margin-bottom: 1rem;
-            text-align: center;
-            padding: 0 20px;
-        }
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 1rem; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-light); font-weight: 500; font-size: 0.85rem; }
+        tr:last-child td { border-bottom: none; }
 
-        p.subtext {
-            font-size: 1rem;
-            letter-spacing: 3px;
-            opacity: 0.8;
-            margin-bottom: 3rem;
-            text-align: center;
-        }
-
-        /* BUTTONS */
-        button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 16px 45px;
-            font-size: 1.2rem;
-            border-radius: 50px;
-            font-family: 'Cinzel', serif;
-            backdrop-filter: blur(10px);
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 0 20px rgba(255, 77, 136, 0.2);
-            cursor: pointer; /* Force pointer cursor on buttons */
-        }
-
-        button:active {
-            transform: scale(0.95);
-            background: var(--primary);
-        }
-
-        /* HUD */
-        #hud {
-            position: absolute;
-            top: 30px;
-            width: 100%;
-            text-align: center;
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            text-shadow: 0 0 10px var(--primary);
-            pointer-events: none;
-        }
-
-        /* POPUP MESSAGE */
-        #message-area {
-            position: absolute;
-            top: 20%;
-            width: 100%;
-            text-align: center;
-            pointer-events: none;
-        }
-
-        .popup-text {
-            font-family: 'Cinzel', serif;
-            font-size: 2rem;
-            color: white;
-            text-shadow: 0 0 20px var(--secondary);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            padding: 0 20px;
-        }
-
-        .popup-text.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* MOBILE JOYSTICK */
-        #joystick-zone {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(4px);
-            display: none; /* Active via JS check */
-            pointer-events: auto; /* MUST be auto to catch touch events */
-            z-index: 100;
-        }
-
-        #joystick-knob {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 77, 136, 0.8);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px var(--primary);
-            pointer-events: none;
-        }
-
-        /* KEYFRAMES */
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.2); opacity: 1; filter: drop-shadow(0 0 15px var(--primary)); }
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            #joystick-zone { display: block; } /* Show joystick on mobile/tablet */
-            #custom-cursor { display: none; } /* Hide decorative cursor on touch */
-            body { cursor: auto; } /* Reset cursor for native touch feel */
-        }
+        /* Course View */
+        .module-list { display: flex; flex-direction: column; gap: 1rem; }
+        .module-item { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .module-header { background: #f8fafc; padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .module-body { padding: 1rem; background: white; display: none; }
+        .module-body.open { display: block; }
+        .lesson-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px dashed var(--border); }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: white; width: 500px; border-radius: 8px; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .modal-header { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; display: flex; justify-content: space-between; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; }
+        .form-control { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; }
+        
+        /* Login Screen */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f8fafc; z-index: 2000; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 400px; text-align: center; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
-    <div id="custom-cursor">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style="stop-color:#ff9a9e;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#ff4d88;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#grad1)" stroke="white" stroke-width="1"/>
-        </svg>
-    </div>
-
-    <div id="ui-layer">
-        <div id="start-screen" class="screen">
-            <h1>Promise Quest</h1>
-            <p class="subtext">THE HEART UNIVERSE</p>
-            <button id="start-btn">Enter World</button>
-        </div>
-
-        <div id="hud" class="hidden">0 / 5 Promises</div>
-
-        <div id="message-area">
-            <div id="popup-text" class="popup-text"></div>
-        </div>
-
-        <div id="end-screen" class="screen hidden" style="background: rgba(15, 23, 42, 0.0); pointer-events: none;">
-            <div style="background: rgba(15, 23, 42, 0.9); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(15px); pointer-events: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
-                <h1>This Promise Is Forever</h1>
-                <p class="subtext" style="color: #ff9a9e; margin-top: 10px;">With you. Always.</p>
-                <button id="restart-btn" style="margin-top: 20px;">Replay</button>
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="color: var(--primary); margin-bottom: 0.5rem;">CENA Digital</h2>
+            <p style="color: var(--text-light); margin-bottom: 2rem;">Internship & Project Platform</p>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>Select Role to Simulate</label>
+                <select id="role-selector" class="form-control">
+                    <option value="student">Student (Arjun)</option>
+                    <option value="mentor">Industry Mentor (Sarah)</option>
+                    <option value="admin">Super Admin (Dr. Ramesh)</option>
+                </select>
             </div>
-        </div>
-
-        <div id="joystick-zone">
-            <div id="joystick-knob"></div>
+            <button onclick="app.login()" class="btn btn-primary" style="width: 100%; justify-content: center;">Enter Platform</button>
         </div>
     </div>
 
-    <div id="canvas-container" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index: 0;"></div>
+    <div id="app" style="display:none;">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2><span class="material-icons-round">school</span> CENA Digital</h2>
+            </div>
+            <ul class="nav-links" id="nav-container">
+                </ul>
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">A</div>
+                <div class="user-info">
+                    <h4 id="user-name">Arjun Kumar</h4>
+                    <p id="user-role">Student</p>
+                </div>
+                <button onclick="location.reload()" class="btn-outline btn-sm" style="margin-left: auto;" title="Logout">
+                    <span class="material-icons-round">logout</span>
+                </button>
+            </div>
+        </aside>
 
-    <script type="module">
-        import * as THREE from 'https://cdn.skypack.dev/three@0.128.0';
+        <main class="main-content">
+            <header class="header">
+                <h1 class="page-title" id="page-title">Dashboard</h1>
+                <div>
+                    <span class="badge badge-blue" id="date-display"></span>
+                </div>
+            </header>
 
-        // --- CONFIGURATION ---
-        const CONFIG = {
-            colors: {
-                bg: 0x0f172a,
-                player: 0xff4d88,
-                fragment: 0x6a11cb,
-                star: 0xffffff,
-                heart: 0xe11d48
+            <div id="content-area">
+                </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="generic-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span id="modal-title">Title</span>
+                <span class="material-icons-round" onclick="app.closeModal()" style="cursor:pointer">close</span>
+            </div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+<script>
+/**
+ * CENA Digital - Simulation Data & Logic
+ */
+
+// --- MOCK DATA ---
+const DB = {
+    users: [
+        { id: 1, name: "Arjun Kumar", role: "student", email: "arjun@college.edu", batch: "Batch-2026-A", progress: 65 },
+        { id: 2, name: "Sarah Jenkins", role: "mentor", email: "sarah@techcorp.com", industry: "FinTech" },
+        { id: 3, name: "Dr. Ramesh", role: "admin", email: "admin@cena.edu" }
+    ],
+    internship: {
+        modules: [
+            { 
+                id: 101, title: "Module 1: Fundamentals of UI/UX", locked: false, completed: true,
+                lessons: [
+                    { title: "Introduction to Design Thinking", type: "video", duration: "15m", completed: true },
+                    { title: "Wireframing Basics", type: "doc", duration: "20m", completed: true }
+                ],
+                assignment: { id: "A1", title: "Create a Login Wireframe", status: "Approved", grade: "90/100" }
             },
-            promises: [
-                "I promise to support your dreams.",
-                "I promise to protect your smile.",
-                "I promise to listen deeply.",
-                "I promise to choose you daily.",
-                "I promise to love you forever."
+            { 
+                id: 102, title: "Module 2: Advanced Prototyping", locked: false, completed: false,
+                lessons: [
+                    { title: "Figma Components", type: "video", duration: "45m", completed: true },
+                    { title: "Interactive Flows", type: "video", duration: "30m", completed: false }
+                ],
+                assignment: { id: "A2", title: "E-Commerce Prototype", status: "Pending", grade: null }
+            },
+            { 
+                id: 103, title: "Module 3: User Testing", locked: true, completed: false,
+                lessons: [],
+                assignment: { id: "A3", title: "Usability Report", status: "Locked", grade: null }
+            }
+        ]
+    },
+    submissions: [
+        { id: 501, student: "Arjun Kumar", assignment: "Create a Login Wireframe", date: "2023-10-10", status: "Approved", marks: 90, feedback: "Great work on spacing." },
+        { id: 502, student: "Arjun Kumar", assignment: "E-Commerce Prototype", date: "2023-10-15", status: "Submitted", marks: null, feedback: null },
+        { id: 503, student: "Priya S.", assignment: "Create a Login Wireframe", date: "2023-10-12", status: "Submitted", marks: null, feedback: null }
+    ],
+    projects: [
+        { id: "P1", title: "Smart Campus App", team: "Team Alpha", status: "In Progress", milestone: "Design Phase", mentor: "Sarah Jenkins" },
+        { id: "P2", title: "AI Chatbot", team: "Team Beta", status: "Review Pending", milestone: "Code Freeze", mentor: "Sarah Jenkins" }
+    ]
+};
+
+// --- APP LOGIC ---
+const app = {
+    currentUser: null,
+    currentView: 'dashboard',
+
+    init: () => {
+        document.getElementById('date-display').innerText = new Date().toDateString();
+    },
+
+    login: () => {
+        const role = document.getElementById('role-selector').value;
+        app.currentUser = DB.users.find(u => u.role === role);
+        
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+        
+        // Update Sidebar User Info
+        document.getElementById('user-name').innerText = app.currentUser.name;
+        document.getElementById('user-role').innerText = role.charAt(0).toUpperCase() + role.slice(1);
+        document.getElementById('user-avatar').innerText = app.currentUser.name.charAt(0);
+
+        app.renderNav();
+        app.navigate('dashboard');
+    },
+
+    renderNav: () => {
+        const nav = document.getElementById('nav-container');
+        nav.innerHTML = '';
+        
+        const menuItems = {
+            student: [
+                { id: 'dashboard', icon: 'dashboard', label: 'Dashboard' },
+                { id: 'modules', icon: 'library_books', label: 'My Modules' },
+                { id: 'assignments', icon: 'assignment', label: 'Assignments' },
+                { id: 'projects', icon: 'work', label: 'My Project' },
+                { id: 'certification', icon: 'verified', label: 'Certification' }
             ],
-            speed: 0.18, // Slightly faster for mobile responsiveness
-            friction: 0.90
+            mentor: [
+                { id: 'dashboard', icon: 'dashboard', label: 'Dashboard' },
+                { id: 'reviews', icon: 'rate_review', label: 'Pending Reviews' },
+                { id: 'students', icon: 'people', label: 'My Students' },
+                { id: 'projects', icon: 'folder_shared', label: 'Project Guidance' }
+            ],
+            admin: [
+                { id: 'dashboard', icon: 'analytics', label: 'Overview' },
+                { id: 'colleges', icon: 'account_balance', label: 'Colleges' },
+                { id: 'reports', icon: 'bar_chart', label: 'Reports' },
+                { id: 'users', icon: 'manage_accounts', label: 'User Master' }
+            ]
         };
 
-        // --- GLOBALS ---
-        let scene, camera, renderer;
-        let player, playerGlow;
-        let fragments = [];
-        let particles, starField, finalHeartSystem;
-        let gameState = 'start';
-        let collectedCount = 0;
+        menuItems[app.currentUser.role].forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'nav-item';
+            li.innerHTML = `
+                <a class="nav-link" onclick="app.navigate('${item.id}')" id="nav-${item.id}">
+                    <span class="material-icons-round">${item.icon}</span> ${item.label}
+                </a>`;
+            nav.appendChild(li);
+        });
+    },
+
+    navigate: (viewId) => {
+        // Active State
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        const activeLink = document.getElementById(`nav-${viewId}`);
+        if(activeLink) activeLink.classList.add('active');
+
+        // Update Title
+        document.getElementById('page-title').innerText = viewId.charAt(0).toUpperCase() + viewId.slice(1).replace('_', ' ');
         
-        // Input
-        const input = { up: false, down: false, left: false, right: false };
-        const velocity = new THREE.Vector3();
-        
-        // Cursor
-        const cursorEl = document.getElementById('custom-cursor');
-        const mouse = { x: window.innerWidth/2, y: window.innerHeight/2 };
-        const targetMouse = { x: window.innerWidth/2, y: window.innerHeight/2 };
-        
-        // Audio
-        let audioCtx;
+        // Render Content
+        const content = document.getElementById('content-area');
+        content.innerHTML = ''; // Clear current
 
-        // --- INITIALIZATION ---
-        function init() {
-            // Scene
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(CONFIG.colors.bg);
-            scene.fog = new THREE.FogExp2(CONFIG.colors.bg, 0.025);
-
-            // Camera
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500);
-            camera.position.set(0, 6, 12);
-
-            // Renderer (Mobile Optimization: Check Pixel Ratio)
-            renderer = new THREE.WebGLRenderer({ antialias: window.devicePixelRatio < 2, alpha: false });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap at 2x
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-            // Lights
-            const ambientLight = new THREE.AmbientLight(0x404040, 2.5); 
-            scene.add(ambientLight);
-            
-            const dirLight = new THREE.DirectionalLight(0xffd700, 0.8);
-            dirLight.position.set(10, 20, 10);
-            scene.add(dirLight);
-
-            // World
-            createEnvironment();
-            createPlayer();
-            
-            // Listeners
-            window.addEventListener('resize', onResize);
-            document.addEventListener('keydown', onKeyDown);
-            document.addEventListener('keyup', onKeyUp);
-            document.addEventListener('mousemove', onMouseMove);
-            
-            // Joystick
-            setupJoystick();
-            
-            // Loop
-            animate();
+        // Route Handler
+        if (app.currentUser.role === 'student') {
+            if (viewId === 'dashboard') app.views.studentDashboard(content);
+            else if (viewId === 'modules') app.views.studentModules(content);
+            else if (viewId === 'assignments') app.views.studentAssignments(content);
+            else if (viewId === 'projects') app.views.studentProject(content);
+            else content.innerHTML = '<p>Module under construction.</p>';
+        } else if (app.currentUser.role === 'mentor') {
+            if (viewId === 'dashboard') app.views.mentorDashboard(content);
+            else if (viewId === 'reviews') app.views.mentorReviews(content);
+            else content.innerHTML = '<p>Module under construction.</p>';
+        } else {
+            if (viewId === 'dashboard') app.views.adminDashboard(content);
+            else content.innerHTML = '<p>Module under construction.</p>';
         }
+    },
 
-        // --- ASSET GENERATION ---
-        function createGlowTexture(color) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 64; canvas.height = 64;
-            const ctx = canvas.getContext('2d');
-            const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-            gradient.addColorStop(0, color);
-            gradient.addColorStop(0.4, 'rgba(0,0,0,0)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 64, 64);
-            return new THREE.CanvasTexture(canvas);
-        }
+    // --- VIEWS ---
+    views: {
+        studentDashboard: (container) => {
+            container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <div class="stat-icon blue"><span class="material-icons-round">trending_up</span></div>
+                        <div><h3>65%</h3><p class="text-light">Overall Progress</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon green"><span class="material-icons-round">task_alt</span></div>
+                        <div><h3>2/3</h3><p class="text-light">Modules Completed</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon orange"><span class="material-icons-round">pending</span></div>
+                        <div><h3>1</h3><p class="text-light">Pending Assignment</p></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Recent Activity</h3>
+                    <table>
+                        <thead><tr><th>Activity</th><th>Date</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>Submitted "E-Commerce Prototype"</td><td>Oct 15</td><td><span class="badge badge-warning">Pending Review</span></td></tr>
+                            <tr><td>Completed "Figma Components"</td><td>Oct 14</td><td><span class="badge badge-success">Done</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        },
 
-        // --- WORLD BUILDING ---
-        function createEnvironment() {
-            // Floor
-            const planeGeo = new THREE.PlaneGeometry(300, 300);
-            const planeMat = new THREE.MeshStandardMaterial({ 
-                color: 0x1e1b4b, 
-                roughness: 0.7, 
-                metalness: 0.2,
+        studentModules: (container) => {
+            let html = '<div class="module-list">';
+            DB.internship.modules.forEach(mod => {
+                const statusIcon = mod.locked ? 'lock' : (mod.completed ? 'check_circle' : 'play_circle');
+                const colorClass = mod.locked ? 'text-light' : (mod.completed ? 'text-success' : 'text-primary');
+                
+                html += `
+                <div class="module-item">
+                    <div class="module-header" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <div style="display:flex; gap:1rem; align-items:center;">
+                            <span class="material-icons-round ${colorClass}">${statusIcon}</span>
+                            <b>${mod.title}</b>
+                        </div>
+                        <span class="material-icons-round">expand_more</span>
+                    </div>
+                    <div class="module-body ${!mod.locked && !mod.completed ? 'open' : ''}">
+                        ${mod.lessons.map(l => `
+                            <div class="lesson-row">
+                                <span><span class="material-icons-round" style="font-size:1rem; vertical-align:middle; margin-right:5px;">${l.type === 'video' ? 'play_arrow' : 'description'}</span> ${l.title}</span>
+                                <span class="badge ${l.completed ? 'badge-success' : 'badge-blue'}">${l.completed ? 'Completed' : 'Start'}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
             });
-            const plane = new THREE.Mesh(planeGeo, planeMat);
-            plane.rotation.x = -Math.PI / 2;
-            plane.position.y = -0.5;
-            scene.add(plane);
+            html += '</div>';
+            container.innerHTML = html;
+        },
 
-            // Stars (Optimized for Mobile)
-            const starGeo = new THREE.BufferGeometry();
-            const starCount = 800; // Reduced count
-            const positions = new Float32Array(starCount * 3);
-            for(let i=0; i<starCount*3; i++) {
-                positions[i] = (Math.random() - 0.5) * 150;
-                if(i % 3 === 1) positions[i] = Math.abs(positions[i]) + 2; 
+        studentAssignments: (container) => {
+            let html = `<div class="card">
+                <table>
+                    <thead><tr><th>Assignment</th><th>Status</th><th>Grade</th><th>Action</th></tr></thead>
+                    <tbody>`;
+            
+            DB.internship.modules.forEach(mod => {
+                if(mod.locked) return;
+                const a = mod.assignment;
+                let badge = 'badge-blue';
+                if(a.status === 'Approved') badge = 'badge-success';
+                if(a.status === 'Locked') badge = 'badge-danger';
+                if(a.status === 'Pending') badge = 'badge-warning';
+
+                const actionBtn = a.status === 'Pending' || a.status === 'Submitted' 
+                    ? `<button class="btn btn-sm btn-outline" disabled>Processing</button>`
+                    : (a.status === 'Approved' ? '-' : `<button class="btn btn-sm btn-primary" onclick="app.actions.openSubmitModal('${a.title}')">Submit</button>`);
+
+                html += `<tr>
+                    <td>${a.title}</td>
+                    <td><span class="badge ${badge}">${a.status}</span></td>
+                    <td>${a.grade || '-'}</td>
+                    <td>${actionBtn}</td>
+                </tr>`;
+            });
+
+            html += `</tbody></table></div>`;
+            container.innerHTML = html;
+        },
+
+        studentProject: (container) => {
+            const proj = DB.projects[0];
+            container.innerHTML = `
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                        <h3>${proj.title} <span class="badge badge-blue">${proj.team}</span></h3>
+                        <span class="badge badge-warning">${proj.status}</span>
+                    </div>
+                    <p><b>Mentor:</b> ${proj.mentor}</p>
+                    <div style="margin-top:1.5rem;">
+                        <label>Current Milestone: <b>${proj.milestone}</b></label>
+                        <div style="background:#e2e8f0; height:8px; border-radius:4px; margin-top:5px;">
+                            <div style="background:var(--primary); width:40%; height:100%; border-radius:4px;"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:1.5rem;">
+                        <h4>Milestone Submissions</h4>
+                        <button class="btn btn-primary" style="margin-top:10px;">Upload Milestone Document</button>
+                    </div>
+                </div>
+            `;
+        },
+
+        mentorDashboard: (container) => {
+             container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <div class="stat-icon orange"><span class="material-icons-round">inbox</span></div>
+                        <div><h3>2</h3><p class="text-light">Pending Reviews</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon blue"><span class="material-icons-round">groups</span></div>
+                        <div><h3>15</h3><p class="text-light">Assigned Students</p></div>
+                    </div>
+                </div>
+                <h3>Action Required</h3>
+                ${app.views.components.reviewTable()}
+            `;
+        },
+
+        mentorReviews: (container) => {
+            container.innerHTML = app.views.components.reviewTable();
+        },
+
+        adminDashboard: (container) => {
+            container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <div class="stat-icon blue"><span class="material-icons-round">domain</span></div>
+                        <div><h3>12</h3><p class="text-light">Colleges Active</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon green"><span class="material-icons-round">person</span></div>
+                        <div><h3>1,240</h3><p class="text-light">Students Enrolled</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon orange"><span class="material-icons-round">assignment</span></div>
+                        <div><h3>85%</h3><p class="text-light">Avg. Completion</p></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>College Performance</h3>
+                    <table>
+                        <thead><tr><th>College</th><th>Students</th><th>Active Internships</th><th>Placement Eligible</th></tr></thead>
+                        <tbody>
+                            <tr><td>KCT Engineering</td><td>120</td><td>110</td><td>45</td></tr>
+                            <tr><td>PSG Tech</td><td>200</td><td>195</td><td>80</td></tr>
+                            <tr><td>CIT Coimbatore</td><td>150</td><td>140</td><td>50</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        },
+
+        components: {
+            reviewTable: () => {
+                const pending = DB.submissions.filter(s => s.status === 'Submitted');
+                if(pending.length === 0) return `<div class="card"><p>No pending reviews.</p></div>`;
+                
+                return `<div class="card">
+                    <table>
+                        <thead><tr><th>Student</th><th>Assignment</th><th>Date</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${pending.map(p => `
+                                <tr>
+                                    <td>${p.student}</td>
+                                    <td>${p.assignment}</td>
+                                    <td>${p.date}</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="app.actions.openGradeModal(${p.id})">Review</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
             }
-            starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            const starMat = new THREE.PointsMaterial({
-                color: CONFIG.colors.star,
-                size: 0.25,
-                transparent: true,
-                opacity: 0.8
-            });
-            starField = new THREE.Points(starGeo, starMat);
-            scene.add(starField);
         }
+    },
 
-        function createPlayer() {
-            // Sphere (Low Poly for mobile)
-            const geo = new THREE.SphereGeometry(0.5, 24, 24);
-            const mat = new THREE.MeshStandardMaterial({
-                color: CONFIG.colors.player,
-                emissive: 0xff0044,
-                emissiveIntensity: 0.5,
-                roughness: 0.1
-            });
-            player = new THREE.Mesh(geo, mat);
-            player.position.set(0, 1, 0);
+    // --- ACTIONS ---
+    actions: {
+        openSubmitModal: (title) => {
+            const modal = document.getElementById('generic-modal');
+            const body = document.getElementById('modal-body');
+            document.getElementById('modal-title').innerText = `Submit: ${title}`;
             
-            // Glow
-            const spriteMat = new THREE.SpriteMaterial({ 
-                map: createGlowTexture('rgba(255, 77, 136, 1)'),
-                transparent: true,
-                blending: THREE.AdditiveBlending
-            });
-            playerGlow = new THREE.Sprite(spriteMat);
-            playerGlow.scale.set(3, 3, 1);
-            player.add(playerGlow);
+            body.innerHTML = `
+                <div class="form-group">
+                    <label>Upload File (Simulated)</label>
+                    <input type="file" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Comments</label>
+                    <textarea class="form-control" rows="3"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="app.actions.submitAssignment('${title}')">Submit Assignment</button>
+            `;
+            modal.style.display = 'flex';
+        },
 
-            // Point Light
-            const pLight = new THREE.PointLight(CONFIG.colors.player, 1.2, 15);
-            player.add(pLight);
+        submitAssignment: (title) => {
+            // Simulate Submission
+            const newSub = { 
+                id: Date.now(), 
+                student: app.currentUser.name, 
+                assignment: title, 
+                date: new Date().toLocaleDateString(), 
+                status: "Submitted", 
+                marks: null 
+            };
+            DB.submissions.push(newSub);
+            
+            // Update Student Local Data
+            const mod = DB.internship.modules.find(m => m.assignment.title === title);
+            if(mod) mod.assignment.status = "Submitted";
 
-            scene.add(player);
-        }
+            app.closeModal();
+            app.navigate('assignments'); // Refresh view
+            alert("Assignment Submitted! Notification sent to Mentor.");
+        },
 
-        function spawnFragments() {
-            fragments.forEach(f => scene.remove(f.mesh));
-            fragments = [];
+        openGradeModal: (subId) => {
+            const sub = DB.submissions.find(s => s.id === subId);
+            const modal = document.getElementById('generic-modal');
+            const body = document.getElementById('modal-body');
+            document.getElementById('modal-title').innerText = `Review: ${sub.student}`;
+            
+            body.innerHTML = `
+                <p><b>Assignment:</b> ${sub.assignment}</p>
+                <div class="form-group" style="margin-top:1rem;">
+                    <label>Marks (out of 100)</label>
+                    <input type="number" id="grade-input" class="form-control" placeholder="0-100">
+                </div>
+                <div class="form-group">
+                    <label>Feedback</label>
+                    <textarea id="feedback-input" class="form-control" rows="3"></textarea>
+                </div>
+                <div style="display:flex; gap:1rem;">
+                    <button class="btn btn-primary" onclick="app.actions.saveGrade(${subId}, 'Approved')">Approve</button>
+                    <button class="btn btn-outline" onclick="app.actions.saveGrade(${subId}, 'Rework')">Request Rework</button>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        },
 
-            const locations = [
-                {x: 0, z: -12}, {x: -10, z: -4}, {x: 10, z: -4}, {x: -7, z: 8}, {x: 7, z: 8}
-            ];
+        saveGrade: (subId, status) => {
+            const sub = DB.submissions.find(s => s.id === subId);
+            const marks = document.getElementById('grade-input').value;
+            
+            if(!marks && status === 'Approved') { alert("Please enter marks"); return; }
 
-            locations.forEach((pos, i) => {
-                const geo = new THREE.OctahedronGeometry(0.6, 0);
-                const mat = new THREE.MeshPhongMaterial({
-                    color: CONFIG.colors.fragment,
-                    emissive: CONFIG.colors.secondary,
-                    emissiveIntensity: 0.6
+            sub.status = status;
+            sub.marks = marks;
+            
+            // Update global internship data for student view sync
+            // In a real app, this is DB sync. Here we hack the object.
+            if(status === 'Approved') {
+                // Find module with this assignment name and update it
+                // Note: simplified logic for demo
+                DB.internship.modules.forEach(m => {
+                    if(m.assignment.title === sub.assignment) {
+                        m.assignment.status = "Approved";
+                        m.assignment.grade = marks + "/100";
+                    }
                 });
-                const mesh = new THREE.Mesh(geo, mat);
-                mesh.position.set(pos.x, 1.5, pos.z);
-
-                // Glow
-                const glow = new THREE.Sprite(new THREE.SpriteMaterial({
-                    map: createGlowTexture('rgba(139, 92, 246, 1)'),
-                    transparent: true,
-                    blending: THREE.AdditiveBlending
-                }));
-                glow.scale.set(3, 3, 1);
-                mesh.add(glow);
-
-                scene.add(mesh);
-                fragments.push({ mesh, baseY: 1.5, offset: i, text: CONFIG.promises[i] });
-            });
-        }
-
-        // --- AUDIO SYSTEM ---
-        function initAudio() {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            audioCtx = new AudioContext();
-            
-            // Simple Ambient Drone
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.frequency.value = 110; 
-            osc.type = 'triangle';
-            gain.gain.value = 0.03; // Very subtle
-            osc.connect(gain).connect(audioCtx.destination);
-            osc.start();
-        }
-
-        function playSound(type) {
-            if(!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain).connect(audioCtx.destination);
-            const now = audioCtx.currentTime;
-
-            if (type === 'collect') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(440, now);
-                osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                osc.start(now);
-                osc.stop(now + 0.5);
-            } else if (type === 'beat') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(60, now);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-                osc.start(now);
-                osc.stop(now + 0.2);
-            }
-        }
-
-        // --- GAMEPLAY LOGIC ---
-        function startGame() {
-            gameState = 'playing';
-            initAudio(); // Initialize audio on user interaction
-            spawnFragments();
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('hud').classList.remove('hidden');
-            collectedCount = 0;
-            updateHUD();
-        }
-
-        function updatePhysics() {
-            if(gameState !== 'playing') return;
-
-            // Apply Force from Keys
-            if (input.up) velocity.z -= CONFIG.speed;
-            if (input.down) velocity.z += CONFIG.speed;
-            if (input.left) velocity.x -= CONFIG.speed;
-            if (input.right) velocity.x += CONFIG.speed;
-
-            // Friction
-            velocity.multiplyScalar(CONFIG.friction);
-            player.position.add(velocity);
-
-            // Boundaries
-            const limit = 40;
-            player.position.x = THREE.MathUtils.clamp(player.position.x, -limit, limit);
-            player.position.z = THREE.MathUtils.clamp(player.position.z, -limit, limit);
-
-            // Rotation Visuals
-            player.rotation.x = velocity.z * 2;
-            player.rotation.z = -velocity.x * 2;
-            
-            // Pulse Effect
-            playerGlow.scale.setScalar(3 + Math.sin(Date.now() * 0.005) * 0.5);
-        }
-
-        function updateCollisions() {
-            if(gameState !== 'playing') return;
-
-            for (let i = fragments.length - 1; i >= 0; i--) {
-                const f = fragments[i];
-                
-                // Animation
-                f.mesh.rotation.y += 0.02;
-                f.mesh.position.y = f.baseY + Math.sin(Date.now()*0.002 + f.offset)*0.3;
-
-                // Check Distance
-                if (player.position.distanceTo(f.mesh.position) < 1.8) {
-                    collectFragment(i);
-                }
-            }
-        }
-
-        function collectFragment(index) {
-            const f = fragments[index];
-            createExplosion(f.mesh.position);
-            playSound('collect');
-            
-            // Show Text
-            const popup = document.getElementById('popup-text');
-            popup.innerText = f.text;
-            popup.classList.add('visible');
-            setTimeout(() => popup.classList.remove('visible'), 2500);
-
-            // Logic
-            scene.remove(f.mesh);
-            fragments.splice(index, 1);
-            collectedCount++;
-            updateHUD();
-
-            if (fragments.length === 0) {
-                setTimeout(triggerEnding, 1500);
-            }
-        }
-
-        function updateHUD() {
-            document.getElementById('hud').innerText = `${collectedCount} / 5 Promises`;
-        }
-
-        function createExplosion(pos) {
-            const count = 20; // Reduced for mobile
-            const geo = new THREE.BufferGeometry();
-            const positions = [];
-            const velocities = [];
-
-            for(let i=0; i<count; i++) {
-                positions.push(pos.x, pos.y, pos.z);
-                velocities.push(
-                    (Math.random()-0.5)*0.3,
-                    (Math.random()-0.5)*0.3,
-                    (Math.random()-0.5)*0.3
-                );
             }
 
-            geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-            const mat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.2, transparent: true });
-            const pts = new THREE.Points(geo, mat);
-            scene.add(pts);
-
-            // Animate once
-            const startTime = Date.now();
-            function animateExplosion() {
-                const elapsed = Date.now() - startTime;
-                if (elapsed > 1000) {
-                    scene.remove(pts);
-                    return;
-                }
-                
-                const posAttr = pts.geometry.attributes.position;
-                for(let i=0; i<count; i++) {
-                    posAttr.setXYZ(i, 
-                        posAttr.getX(i) + velocities[i*3],
-                        posAttr.getY(i) + velocities[i*3+1],
-                        posAttr.getZ(i) + velocities[i*3+2]
-                    );
-                }
-                posAttr.needsUpdate = true;
-                mat.opacity = 1 - (elapsed/1000);
-                requestAnimationFrame(animateExplosion);
-            }
-            animateExplosion();
+            app.closeModal();
+            app.navigate('reviews'); // Refresh Mentor View
         }
+    },
 
-        // --- ENDING ---
-        function triggerEnding() {
-            gameState = 'ending';
-            document.getElementById('hud').classList.add('hidden');
-            
-            createFinalHeart();
+    closeModal: () => {
+        document.getElementById('generic-modal').style.display = 'none';
+    }
+};
 
-            setInterval(() => playSound('beat'), 1200);
+// Initialize
+app.init();
 
-            setTimeout(() => {
-                document.getElementById('end-screen').classList.remove('hidden');
-            }, 4000);
-        }
-
-        function createFinalHeart() {
-            const geo = new THREE.BufferGeometry();
-            const positions = [];
-            const colors = [];
-            const color = new THREE.Color(CONFIG.colors.heart);
-            const count = 2500; // Reduced for mobile
-
-            for(let i=0; i<count; i++) {
-                const t = Math.random() * Math.PI * 2;
-                
-                // Heart Formula
-                let x = 16 * Math.pow(Math.sin(t), 3);
-                let y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-                let z = (Math.random() - 0.5) * 5;
-
-                const s = 0.35;
-                x *= s; y *= s; z *= s;
-                y += 5;
-
-                positions.push(x, y, z);
-                colors.push(color.r, color.g, color.b + (Math.random()*0.3));
-            }
-
-            geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-            geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-            
-            const mat = new THREE.PointsMaterial({
-                size: 0.15, vertexColors: true, blending: THREE.AdditiveBlending,
-                transparent: true, opacity: 0
-            });
-
-            finalHeartSystem = new THREE.Points(geo, mat);
-            scene.add(finalHeartSystem);
-
-            // Fade In
-            let op = 0;
-            const timer = setInterval(() => {
-                op += 0.01;
-                mat.opacity = op;
-                if(op >= 1) clearInterval(timer);
-            }, 30);
-        }
-
-        // --- INPUT HANDLING ---
-        function onKeyDown(e) {
-            const key = e.code;
-            if(key === 'ArrowUp' || key === 'KeyW') input.up = true;
-            if(key === 'ArrowDown' || key === 'KeyS') input.down = true;
-            if(key === 'ArrowLeft' || key === 'KeyA') input.left = true;
-            if(key === 'ArrowRight' || key === 'KeyD') input.right = true;
-        }
-
-        function onKeyUp(e) {
-            const key = e.code;
-            if(key === 'ArrowUp' || key === 'KeyW') input.up = false;
-            if(key === 'ArrowDown' || key === 'KeyS') input.down = false;
-            if(key === 'ArrowLeft' || key === 'KeyA') input.left = false;
-            if(key === 'ArrowRight' || key === 'KeyD') input.right = false;
-        }
-
-        function onMouseMove(e) {
-            targetMouse.x = e.clientX;
-            targetMouse.y = e.clientY;
-        }
-
-        function setupJoystick() {
-            const zone = document.getElementById('joystick-zone');
-            const knob = document.getElementById('joystick-knob');
-            let startX, startY;
-
-            zone.addEventListener('touchstart', (e) => {
-                e.preventDefault(); // Stop Browser Scroll
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-            }, {passive: false});
-
-            zone.addEventListener('touchmove', (e) => {
-                e.preventDefault(); // Stop Browser Scroll
-                const t = e.touches[0];
-                const dx = t.clientX - startX;
-                const dy = t.clientY - startY;
-                const dist = Math.min(Math.hypot(dx, dy), 35);
-                const angle = Math.atan2(dy, dx);
-                
-                knob.style.transform = `translate(calc(-50% + ${Math.cos(angle)*dist}px), calc(-50% + ${Math.sin(angle)*dist}px))`;
-                
-                // Map joystick to keyboard-like input
-                input.right = dx > 10;
-                input.left = dx < -10;
-                input.down = dy > 10;
-                input.up = dy < -10;
-            }, {passive: false});
-
-            zone.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                knob.style.transform = 'translate(-50%, -50%)';
-                input.up = input.down = input.left = input.right = false;
-            });
-        }
-
-        function onResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // --- ANIMATION LOOP ---
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Update Cursor
-            mouse.x += (targetMouse.x - mouse.x) * 0.2;
-            mouse.y += (targetMouse.y - mouse.y) * 0.2;
-            if(cursorEl) {
-                cursorEl.style.left = mouse.x + 'px';
-                cursorEl.style.top = mouse.y + 'px';
-            }
-
-            // Game Logic
-            updatePhysics();
-            updateCollisions();
-
-            // Camera Logic
-            if(gameState === 'ending') {
-                const target = new THREE.Vector3(0, 8, 20);
-                camera.position.lerp(target, 0.02);
-                camera.lookAt(0, 5, 0);
-                if(finalHeartSystem) {
-                    finalHeartSystem.rotation.y += 0.005;
-                    const s = 1 + Math.sin(Date.now()*0.003)*0.05;
-                    finalHeartSystem.scale.set(s,s,s);
-                }
-            } else {
-                const targetPos = new THREE.Vector3(player.position.x, player.position.y + 10, player.position.z + 14);
-                camera.position.lerp(targetPos, 0.08);
-                camera.lookAt(player.position);
-            }
-
-            if(starField) starField.rotation.y += 0.0005;
-
-            renderer.render(scene, camera);
-        }
-
-        // Bind Buttons
-        document.getElementById('start-btn').addEventListener('click', startGame);
-        document.getElementById('restart-btn').addEventListener('click', () => location.reload());
-
-        // Run
-        init();
-
-    </script>
+</script>
 </body>
 </html>
